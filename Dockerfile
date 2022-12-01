@@ -146,5 +146,5 @@ RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
 RUN chown mysql:mysql --from=root:root -R $HOPSWORK_DIR /home/mysql
 
 ENTRYPOINT ["./docker/rondb_standalone/entrypoints/entrypoint.sh"]
-EXPOSE 3306 33060 11860 1186
+EXPOSE 3306 33060 11860 1186 4406 5406
 CMD ["mysqld"]

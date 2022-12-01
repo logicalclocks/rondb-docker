@@ -1,0 +1,34 @@
+{
+    "RestServer": {
+        "RESTServerIP": "localhost",
+        "RESTServerPort": 4406,
+        "GRPCServerIP": "localhost",
+        "GRPCServerPort": 5406,
+        "APIVersion": "0.1.0",
+        "BufferSize": 327680,
+        "PreAllocatedBuffers": 1024,
+        "GOMAXPROCS": -1
+    },
+    "RonDBConfig": {
+        "IP": "%s",
+        "Port": 1186
+    },
+    "MySQLServer": {
+        "IP": "%s",
+        "Port": 3306,
+        "User": "%s",
+        "Password": "%s"
+    },
+    "Security": {
+        "EnableTLS": false,
+        "RequireAndVerifyClientCert": false,
+        "CertificateFile": "",
+        "PrivateKeyFile": ""
+    },
+    "Log": {
+        "Level": "debug",
+        "MaxSizeMB": 100,
+        "MaxBackups": 10,
+        "MaxAge": 30
+    }
+}
