@@ -221,6 +221,9 @@ if [ -n "$RONDB_TARBALL_PATH" ] && [ -n "$RONDB_TARBALL_URL" ]; then
     echo "Cannot specify both a RonDB tarball path and url" >&2
     print_usage
     exit 1
+elif [ $NUM_REST_API_CONTAINERS -gt 0 -a $NUM_MYSQL_CONTAINERS -lt 1 ]; then
+    echo "REST API servers require a MySQLd instance"
+    exit 1
 fi
 
 if [ "$NUM_MGM_NODES" -lt 1 ]; then
@@ -635,6 +638,9 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
             template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_SETUP_APP" "1")"
         fi
 
+        healthcheck=$(printf "$HEALTHCHECK_TEMPLATE" "mysqladmin ping -uroot" "10" "2" "5")
+        template+="$healthcheck"
+
         BASE_DOCKER_COMPOSE_FILE+="$template"
 
         NODE_ID_OFFSET=$(($((CONTAINER_NUM - 1)) * MYSQLD_SLOTS_PER_CONTAINER))
@@ -683,6 +689,10 @@ if [ "$NUM_REST_API_NODES" -gt 0 ]; then
         template+="$ports"
         ports=$(printf "$PORTS_TEMPLATE" "5406" "5406")
         template+="$ports"
+
+        template+="$DEPENDS_ON_FIELD"
+        depends_on=$(printf "$DEPENDS_ON_TEMPLATE" "mysqld_1")
+        template+="$depends_on"
 
         BASE_DOCKER_COMPOSE_FILE+="$template"
 
@@ -769,6 +779,10 @@ if [ $NUM_BENCH_NODES -gt 0 ]; then
 
         template+="$ENV_FIELD"
         template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_PASSWORD" "$MYSQL_PASSWORD")"
+
+        template+="$DEPENDS_ON_FIELD"
+        depends_on=$(printf "$DEPENDS_ON_TEMPLATE" "mysqld_1")
+        template+="$depends_on"
 
         BASE_DOCKER_COMPOSE_FILE+="$template"
 
