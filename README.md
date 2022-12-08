@@ -96,7 +96,8 @@ Commands to run:
   --node-groups 1 \
   --replication-factor 2 \
   --num-mysql-nodes 1 \
-  --num-api-nodes 1
+  --num-rest-api-nodes 1 \
+  --num-benchmarking-nodes 1
 
 # Build cross-platform image (linux/arm64 here)
 docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.12 \
@@ -150,7 +151,7 @@ The Docker images come with a set of benchmarks pre-installed. To run any of the
 
 # Running with a custom size; The benchmarks are run on the API containers and make queries towards the mysqld containers; this means that both types are needed.
 ./build_run_docker.sh \
-  -v latest -m 1 -g 1 -r 2 -my 2 -a 1 \
+  -v latest -m 1 -g 1 -r 2 -my 2 -bn 1 \
   --run-benchmark <sysbench_single, sysbench_multi, dbt2_single>
 ```
 
