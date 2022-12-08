@@ -163,6 +163,9 @@ If you use the `-lv` flag, the results of the benchmarks are mounted into the lo
 
 ## Preliminary Notes for YCSB benchmarking
 
+Setup:
+* Change [resources/entrypoints/init_scripts/setup_ycsb.sql](resources/entrypoints/init_scripts/setup_ycsb.sql) to create different tables
+
 Reasons for failure:
 * When running `ycsb load`, all data is first loaded into memory of the benchmarking container. Check the available memory for benchmarking containers in [docker.env](docker.env) and compare it to `fieldcount * fieldlength * recordcount` in the YCSB workload file. The same amount of memory needs to be supported by the ndbmtd container.
 
