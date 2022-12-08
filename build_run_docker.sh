@@ -39,7 +39,8 @@ VERSION="$(< "$SCRIPT_DIR/VERSION" sed -e 's/^[[:space:]]*//')"
 
 NUM_MGM_NODES=1
 NUM_MYSQL_NODES=0
-NUM_API_NODES=0
+NUM_REST_API_NODES=0
+NUM_BENCH_NODES=0
 REPLICATION_FACTOR=1
 NODE_GROUPS=1
 RUN_BENCHMARK=
@@ -67,7 +68,8 @@ Usage: $0
     [-g     --node-groups                               <int>   ]
     [-r     --replication-factor                        <int>   ]
     [-my    --num-mysql-nodes                           <int>   ]
-    [-a     --num-api-nodes                             <int>   ]
+    [-ra    --num-rest-api-nodes                        <int>   ]
+    [-bn     --num-benchmarking-nodes                    <int>   ]
     [-b     --run-benchmark                             <string>
                 Options: <sysbench_single, sysbench_multi, 
                     dbt2_single>                                ]
@@ -140,8 +142,13 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    -a | --num-api-nodes)
-        NUM_API_NODES="$2"
+    -ra | --num-rest-api-nodes)
+        NUM_REST_API_NODES="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -bn | --num-benchmarking-nodes)
+        NUM_BENCH_NODES="$2"
         shift # past argument
         shift # past value
         ;;
@@ -188,8 +195,9 @@ print-parsed-arguments() {
     echo "Number of management nodes    = ${NUM_MGM_NODES}"
     echo "Node groups                   = ${NODE_GROUPS}"
     echo "Replication factor            = ${REPLICATION_FACTOR}"
-    echo "Number of mysql nodes         = ${NUM_MYSQL_NODES}"
-    echo "Number of api nodes           = ${NUM_API_NODES}"
+    echo "Number of MySQL nodes         = ${NUM_MYSQL_NODES}"
+    echo "Number of REST API nodes      = ${NUM_REST_NODES}"
+    echo "Number of benchmarking nodes  = ${NUM_BENCH_NODES}"
     echo "Run benchmark                 = ${RUN_BENCHMARK}"
     echo "Volume type docker/local      = ${VOLUME_TYPE}"
     echo "Save sample files             = ${SAVE_SAMPLE_FILES}"
@@ -241,32 +249,32 @@ if [ -n "$RUN_BENCHMARK" ]; then
        [ "$RUN_BENCHMARK" != "dbt2_single" ]; then
         echo "Benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single>" >&2
         exit 1
-    elif [ "$NUM_API_NODES" -lt 1 ]; then
-        echo "At least one api is required to run benchmarks" >&2
+    elif [ $NUM_BENCH_NODES -lt 1 ]; then
+        echo "At least one bench node is required to run benchmarks" >&2
         exit 1
-    elif [ "$NUM_MYSQL_NODES" -lt 1 ]; then
-        echo "At least one mysqld is required to run benchmarks" >&2
+    elif [ $NUM_MYSQL_NODES -lt 1 ]; then
+        echo "At least one MySQLd is required to run benchmarks" >&2
         exit 1
     fi
 
     # This is not a hard requirement, but is better for benchmarking
-    # One api container can however also run multiple Sysbench instances against multiple mysqld containers
+    # One api container can however also run multiple Sysbench instances against multiple MySQLd containers
     if [ "$RUN_BENCHMARK" == "sysbench_multi" ]; then
-        if [ "$NUM_MYSQL_NODES" -lt "$NUM_API_NODES" ]; then
-            echo "For sysbench_multi, there should be at least as many mysqld as api containers" >&2
+        if [ "$NUM_MYSQL_NODES" -lt "$NUM_BENCH_NODES" ]; then
+            echo "For sysbench_multi, there should be at least as many MySQLd as api containers" >&2
             exit 1
         fi
     fi
 
     if [ "$RUN_BENCHMARK" == "sysbench_multi" ] || [ "$RUN_BENCHMARK" == "dbt2_multi" ]; then
         if [ "$NUM_MYSQL_NODES" -lt 2 ]; then
-            echo "At least two mysqlds are required to run the multi-benchmarks" >&2
+            echo "At least two MySQLds are required to run the multi-benchmarks" >&2
             exit 1
         fi
     fi
 
     if [ "$RUN_BENCHMARK" == "dbt2_single" ] || [ "$RUN_BENCHMARK" == "dbt2_multi" ]; then
-        if [ "$NUM_API_NODES" -gt 1 ]; then
+        if [ "$NUM_BENCH_NODES" -gt 1 ]; then
             echo "Can only run dbt2 benchmarks with one api container" >&2
             exit 1
         fi
@@ -274,8 +282,8 @@ if [ -n "$RUN_BENCHMARK" ]; then
 
     # TODO: Make this work with BENCHMARK_SERVERS in sysbench_multi; This requires some
     #   care in synchronizing the api nodes when executing the benchmark.
-    if [ "$NUM_API_NODES" -gt 1 ]; then
-        echo "Running more than one api container for Sysbench benchmarks is currently not supported" >&2
+    if [ "$NUM_BENCH_NODES" -gt 1 ]; then
+        echo "Running more than one bench container for Sysbench benchmarks is currently not supported" >&2
         exit 1
     fi
 fi
@@ -291,7 +299,7 @@ RONDB_VERSION_NO_DOT=$(echo "$RONDB_VERSION" | tr -d '.')
 # yes | docker container prune
 # yes | docker volume prune
 
-FILE_SUFFIX="v${RONDB_VERSION_NO_DOT}_m${NUM_MGM_NODES}_g${NODE_GROUPS}_r${REPLICATION_FACTOR}_my${NUM_MYSQL_NODES}_api${NUM_API_NODES}"
+FILE_SUFFIX="v${RONDB_VERSION_NO_DOT}_m${NUM_MGM_NODES}_g${NODE_GROUPS}_r${REPLICATION_FACTOR}_my${NUM_MYSQL_NODES}_ra${NUM_REST_NODES}_b${NUM_BENCH_NODES}"
 
 AUTOGENERATED_FILES_DIR="$SCRIPT_DIR/autogenerated_files/$FILE_SUFFIX"
 rm -rf $AUTOGENERATED_FILES_DIR
@@ -584,7 +592,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         command=$(printf "$COMMAND_TEMPLATE" "[\"mysqld\"]")
         template+="$command"
 
-        # mysqld needs this, or will otherwise complain "mbind: Operation not permitted".
+        # MySQLd needs this, or will otherwise complain "mbind: Operation not permitted".
         template+="
       cap_add:
         - SYS_NICE"
@@ -614,7 +622,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         template+="$ports"
         EXPOSE_MYSQLD_PORTS_STARTING_AT=$((EXPOSE_MYSQLD_PORTS_STARTING_AT + 1))
 
-        # Can add the following env vars to the mysqld containers:
+        # Can add the following env vars to the MySQLd containers:
         # MYSQL_ROOT_PASSWORD
         # MYSQL_DATABASE
 
@@ -647,8 +655,8 @@ fi
 MULTI_MYSQLD_IPS=${MULTI_MYSQLD_IPS%?}
 
 API_NODE_ID=195
-if [ "$NUM_API_NODES" -gt 0 ]; then
-    for CONTAINER_NUM in $(seq "$NUM_API_NODES"); do
+if [ "$NUM_BENCH_NODES" -gt 0 ]; then
+    for CONTAINER_NUM in $(seq "$NUM_BENCH_NODES"); do
         SERVICE_NAME="api_$CONTAINER_NUM"
         template="$(service-template)"
 
@@ -783,10 +791,10 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
     MY_CNF=$(printf "$MY_CNF_TEMPLATE" "$MYSQLD_SLOTS_PER_CONTAINER" "$MGM_CONNECTION_STRING")
     echo "$MY_CNF" > "$MY_CNF_FILEPATH"
 
-    if [ "$NUM_API_NODES" -gt 0 ]; then
-        echo "Writing benchmarking files for single mysqlds"
+    if [ "$NUM_BENCH_NODES" -gt 0 ]; then
+        echo "Writing benchmarking files for single MySQLds"
 
-        # This will always have 1 api and 1 mysqld container, and 1 Sysbench instance
+        # This will always have 1 api and 1 MySQLd container, and 1 Sysbench instance
         AUTOBENCH_SYSBENCH_SINGLE=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
             "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD" \
             "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
@@ -801,7 +809,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         echo "$AUTOBENCH_DBT2_SINGLE" > "$AUTOBENCH_DBT2_SINGLE_FILEPATH"
 
         if [ "$NUM_MYSQL_NODES" -gt 1 ]; then
-            echo "Writing benchmarking files for multiple mysqlds"
+            echo "Writing benchmarking files for multiple MySQLds"
 
             AUTOBENCH_SYSBENCH_MULTI=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
                 "$MULTI_MYSQLD_IPS" "$MYSQL_USER" "$MYSQL_PASSWORD" \
@@ -819,7 +827,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
     fi
 fi
 
-if [ "$NUM_API_NODES" -gt 0 ]; then
+if [ "$NUM_BENCH_NODES" -gt 0 ]; then
     echo "Writing configuration file for the REST API server"
     REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$MGMD_IPS" "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD")
     echo "$REST_API_CONFIG" >$REST_API_JSON_FILEPATH
