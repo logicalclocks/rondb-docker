@@ -877,7 +877,7 @@ fi
 
 if [ "$NUM_BENCH_NODES" -gt 0 ]; then
     echo "Writing configuration file for the REST API server"
-    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$MGMD_IPS" "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD")
+    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "" "" "$MGMD_IPS" "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD")
     echo "$REST_API_CONFIG" >$REST_API_JSON_FILEPATH
 fi
 
