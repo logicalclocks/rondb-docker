@@ -161,6 +161,11 @@ If you use the `-lv` flag, the results of the benchmarks are mounted into the lo
 
 ***Note***: Benchmarking RonDB with a docker-compose setup on a single machine may not bring optimal performance results. This is because both the mysqlds and the ndbmtds (multi-threaded data nodes) scale in performance with more CPUs. In a production setting, each of these programs would be deployed on their own VM, whereby mysqlds and ndbmtds will scale linearly with up to 32 cores. The possibility of benchmarking was added here to give the user an introduction of benchmarking RonDB without needing to spin up a cluster with VMs. Using larger machines and increasing the `--size` flag in `run.sh`, will however improve benchmark results significantly.
 
+## Preliminary Notes for YCSB benchmarking
+
+Reasons for failure:
+* When running `ycsb load`, all data is first loaded into memory of the benchmarking container. Check the available memory for benchmarking containers in [docker.env](docker.env) and compare it to `fieldcount * fieldlength * recordcount` in the YCSB workload file. The same amount of memory needs to be supported by the ndbmtd container.
+
 ## ***New***: Managed RonDB
 
 Apart from using/building the Docker image `rondb-standalone`, RonDB can also be run as a managed database, using the Docker image `hopsworks/rondb-managed`. This means that the cluster becomes dynamic - one can add nodes, perform rolling software upgrades, do backups and even restore from backups. See the directory [managed_rondb](managed_rondb) for more.
