@@ -24,8 +24,9 @@ RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt-$TARGETPLATFORM \
     && apt-get install -y wget tar gzip vim \
     libaio1 libaio-dev \
     libncurses5 libnuma-dev \
-    bc \
+    bc default-jdk maven \
     sudo
+    # Java & Maven are required by YCSB
     # bc is required by dbt2
     # libaio is a dynamic library used by RonDB
     # libncurses5 & libnuma-dev are required for x86 only
