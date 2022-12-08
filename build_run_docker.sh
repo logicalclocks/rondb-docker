@@ -258,7 +258,7 @@ if [ -n "$RUN_BENCHMARK" ]; then
     fi
 
     # This is not a hard requirement, but is better for benchmarking
-    # One api container can however also run multiple Sysbench instances against multiple MySQLd containers
+    # One benchmarking container can however also run multiple Sysbench instances against multiple MySQLd containers
     if [ "$RUN_BENCHMARK" == "sysbench_multi" ]; then
         if [ "$NUM_MYSQL_NODES" -lt "$NUM_BENCH_NODES" ]; then
             echo "For sysbench_multi, there should be at least as many MySQLd as api containers" >&2
@@ -281,9 +281,9 @@ if [ -n "$RUN_BENCHMARK" ]; then
     fi
 
     # TODO: Make this work with BENCHMARK_SERVERS in sysbench_multi; This requires some
-    #   care in synchronizing the api nodes when executing the benchmark.
+    #   care in synchronizing the benchmarking nodes when executing the benchmark.
     if [ "$NUM_BENCH_NODES" -gt 1 ]; then
-        echo "Running more than one bench container for Sysbench benchmarks is currently not supported" >&2
+        echo "Running more than one benchmarking container for Sysbench benchmarks is currently not supported" >&2
         exit 1
     fi
 fi
@@ -794,7 +794,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
     if [ "$NUM_BENCH_NODES" -gt 0 ]; then
         echo "Writing benchmarking files for single MySQLds"
 
-        # This will always have 1 api and 1 MySQLd container, and 1 Sysbench instance
+        # This will always have 1 benchmarking and 1 MySQLd container, and 1 Sysbench instance
         AUTOBENCH_SYSBENCH_SINGLE=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
             "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD" \
             "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
