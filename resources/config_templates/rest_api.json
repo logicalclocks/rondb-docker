@@ -23,7 +23,8 @@
         "EnableTLS": false,
         "RequireAndVerifyClientCert": false,
         "CertificateFile": "",
-        "PrivateKeyFile": ""
+        "PrivateKeyFile": "",
+        "UseHopsWorksAPIKeys": false
     },
     "Log": {
         "Level": "trace",
