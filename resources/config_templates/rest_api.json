@@ -26,7 +26,7 @@
         "PrivateKeyFile": ""
     },
     "Log": {
-        "Level": "debug",
+        "Level": "trace",
         "MaxSizeMB": 100,
         "MaxBackups": 10,
         "MaxAge": 30
