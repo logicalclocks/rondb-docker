@@ -1,0 +1,9 @@
+# Creating Sample Files
+
+The files in this directory are for documentation. They are a copy of the auto-generated files when running:
+
+```bash
+./build_run_docker.sh <other args> --save-sample-files
+```
+
+They thereby all belong to the same cluster configuration, which is documented in [parsed_arguments.txt](parsed_arguments.txt).
