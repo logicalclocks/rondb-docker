@@ -33,7 +33,7 @@ VERSION="$(cat $SCRIPT_DIR/VERSION | sed -e 's/^[[:space:]]*//')"
 
 function print_usage() {
     cat <<EOF
-RONDB-DOCKER VERSION: $VERSION"
+RONDB-DOCKER VERSION: $VERSION
 
 Usage: $0    
     [-h         --help                              ]
