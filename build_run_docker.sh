@@ -163,6 +163,7 @@ print-parsed-arguments() {
     echo "Number of api nodes           = ${NUM_API_NODES}"
     echo "Run benchmark                 = ${RUN_BENCHMARK}"
     echo "Volume type docker/local      = ${VOLUME_TYPE}"
+    echo "Save sample files             = ${SAVE_SAMPLE_FILES}"
     echo
 }
 print-parsed-arguments

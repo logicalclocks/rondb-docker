@@ -14,4 +14,5 @@ Number of mysql nodes         = 1
 Number of api nodes           = 1
 Run benchmark                 = 
 Volume type docker/local      = docker
+Save sample files             = 1
 
