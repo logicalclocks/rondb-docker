@@ -1,4 +1,4 @@
-RONDB-DOCKER VERSION: 0.2-SNAPSHOT
+RonDB-Docker version: 0.2-SNAPSHOT
 
 #################
 Parsed arguments:

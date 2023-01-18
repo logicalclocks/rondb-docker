@@ -33,7 +33,7 @@ VERSION="$(cat $SCRIPT_DIR/VERSION | sed -e 's/^[[:space:]]*//')"
 
 function print_usage() {
     cat <<EOF
-RONDB-DOCKER VERSION: $VERSION
+RonDB-Docker version: $VERSION
 
 Usage: $0    
     [-h         --help                              ]
@@ -147,7 +147,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 print-parsed-arguments() {
-    echo "RONDB-DOCKER VERSION: $VERSION"
+    echo "RonDB-Docker version: $VERSION"
     echo
     echo "#################"
     echo "Parsed arguments:"
@@ -433,7 +433,7 @@ add_volume_to_template() {
 # Adding the repo VERSION for easier reference in the documentation
 BASE_DOCKER_COMPOSE_FILE="version: '3.8'
 
-# RONDB-DOCKER VERSION: $VERSION
+# RonDB-Docker version: $VERSION
 services:"
 
 for CONTAINER_NUM in $(seq $NUM_MGM_NODES); do

@@ -1,6 +1,6 @@
 version: '3.8'
 
-# RONDB-DOCKER VERSION: 0.2-SNAPSHOT
+# RonDB-Docker version: 0.2-SNAPSHOT
 services:
 
     mgmd_1:
