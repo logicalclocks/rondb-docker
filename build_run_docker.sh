@@ -220,6 +220,9 @@ fi
 # We use this for the docker-compose project name, which will not allow "."
 RONDB_VERSION_NO_DOT=$(echo "$RONDB_VERSION" | tr -d '.')
 
+# Repo version
+VERSION="$(cat VERSION | sed -e 's/^[[:space:]]*//')"
+
 ## Uncomment this for quicker testing
 # yes | docker container prune
 # yes | docker volume prune
@@ -409,8 +412,10 @@ add_volume_to_template() {
     fi
 }
 
+# Adding the repo VERSION for easier reference in the documentation 
 BASE_DOCKER_COMPOSE_FILE="version: '3.8'
 
+# RONDB-DOCKER VERSION: $VERSION
 services:"
 
 for CONTAINER_NUM in $(seq $NUM_MGM_NODES); do
