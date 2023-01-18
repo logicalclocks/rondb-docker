@@ -1,0 +1,18 @@
+RonDB-Docker version: 0.2-SNAPSHOT
+
+#################
+Parsed arguments:
+#################
+
+RonDB version                 = 21.04.9
+RonDB tarball local/remote    = local
+RonDB tarball URI             = ./rondb-21.04.9-linux-glibc2.35-arm64_v8.tar.gz
+Number of management nodes    = 1
+Node groups                   = 1
+Replication factor            = 2
+Number of mysql nodes         = 1
+Number of api nodes           = 1
+Run benchmark                 = 
+Volume type docker/local      = docker
+Save sample files             = 1
+
