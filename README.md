@@ -108,7 +108,7 @@ It may be the case that the benchmarks require more resources than are configure
 
 ***Note***: Benchmarking RonDB with a docker-compose setup on a single machine may not bring optimal performance results. This is because both the mysqlds and the ndbmtds (multi-threaded data nodes) scale in performance with more CPUs. In a production setting, each of these programs would be deployed on their own VM, whereby mysqlds and ndbmtds will scale linearly with up to 32 cores. The possibility of benchmarking was added here to give the user an introduction of benchmarking RonDB without needing to spin up a cluster with VMs.
 
-To execute a benchmark on a bigger machine to get better numbers one need to increase the settings
+To execute a benchmark on a bigger machine to get better numbers one needs to increase the settings
 in docker.env and resources/config_templates/config.ini.
 
 ## Goals of this repository
