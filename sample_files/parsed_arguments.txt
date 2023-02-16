@@ -5,6 +5,7 @@ Parsed arguments:
 #################
 
 RonDB version                 = 21.04.9
+Pull Dockerhub image          = 
 RonDB tarball local/remote    = local
 RonDB tarball URI             = ./rondb-21.04.9-linux-glibc2.35-arm64_v8.tar.gz
 Number of management nodes    = 1
