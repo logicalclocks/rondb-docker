@@ -4,7 +4,7 @@ version: '3.8'
 services:
 
     mgmd_1:
-      image: rondb-standalone:21.04.9
+      image: rondb-standalone:21.04.10
       container_name: mgmd_1
       command: ["ndb_mgmd", "--ndb-nodeid=65", "--initial"]
       deploy:
@@ -28,7 +28,7 @@ services:
       - HOST_GROUP_ID=20
 
     ndbd_1:
-      image: rondb-standalone:21.04.9
+      image: rondb-standalone:21.04.10
       container_name: ndbd_1
       command: ["ndbmtd", "--ndb-nodeid=1", "--initial", "--ndb-connectstring=mgmd_1:1186"]
       deploy:
@@ -49,7 +49,7 @@ services:
       - HOST_GROUP_ID=20
 
     ndbd_2:
-      image: rondb-standalone:21.04.9
+      image: rondb-standalone:21.04.10
       container_name: ndbd_2
       command: ["ndbmtd", "--ndb-nodeid=2", "--initial", "--ndb-connectstring=mgmd_1:1186"]
       deploy:
@@ -70,7 +70,7 @@ services:
       - HOST_GROUP_ID=20
 
     mysqld_1:
-      image: rondb-standalone:21.04.9
+      image: rondb-standalone:21.04.10
       container_name: mysqld_1
       command: ["mysqld"]
       cap_add:
@@ -100,7 +100,7 @@ services:
       - MYSQL_SETUP_APP=1
 
     api_1:
-      image: rondb-standalone:21.04.9
+      image: rondb-standalone:21.04.10
       container_name: api_1
       command: >
           bash -c "ndb_waiter --ndb-connectstring=mgmd_1:1186 &&

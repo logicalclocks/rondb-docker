@@ -24,8 +24,8 @@ Commands to run:
 # Beware that the local platform is linux/arm64 in this case
 ./build_run_docker.sh \
   --rondb-tarball-is-local \
-  --rondb-tarball-uri ./rondb-21.04.9-linux-glibc2.35-arm64_v8.tar.gz \
-  --rondb-version 21.04.9 \
+  --rondb-tarball-uri ./rondb-21.04.10-linux-glibc2.35-arm64_v8.tar.gz \
+  --rondb-version 21.04.10 \
   --num-mgm-nodes 1 \
   --node-groups 1 \
   --replication-factor 2 \
@@ -83,8 +83,8 @@ The Docker images come with a set of benchmarks pre-installed. To run any of the
 # The benchmarks are run on the API containers and make queries towards the mysqld containers; this means that both types are needed.
 ./build_run_docker.sh \
   --rondb-tarball-is-local \
-  -ruri ./rondb-21.04.9-linux-glibc2.35-arm64_v8.tar.gz \
-  -v 21.04.9 -m 1 -g 1 -r 2 -my 1 -a 1 \
+  -ruri ./rondb-21.04.10-linux-glibc2.35-arm64_v8.tar.gz \
+  -v 21.04.10 -m 1 -g 1 -r 2 -my 1 -a 1 \
   --run-benchmark <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>
 ```
 
@@ -113,7 +113,7 @@ in docker.env and resources/config_templates/config.ini.
 
 ## Goals of this repository
 
-1. Create an image with RonDB installed "hopsworks/rondb-standalone:21.04.9"
+1. Create an image with RonDB installed "hopsworks/rondb-standalone:21.04.10"
    - Purpose: basic local testing & building stone for other images
    - No building of RonDB itself
    - Supporting multiple CPU architectures
@@ -128,7 +128,7 @@ in docker.env and resources/config_templates/config.ini.
      - dynamic setup of docker-compose file
      - standalone entrypoints
 
-2. Create an image with ndb-agent installed "hopsworks/rondb-managed:21.04.9-1.0"
+2. Create an image with ndb-agent installed "hopsworks/rondb-managed:21.04.10-1.0"
    - use "rondb-standalone" as base image
    - use this for demos of how upgrades/scaling/backups of RonDB can be used in the cloud
    - use this for testing managed RonDB to avoid the necessity of a Hopsworks cluster
