@@ -13,6 +13,8 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETVARIANT
 
+ARG EXTRA_PACKAGES
+
 ARG OPEN_SSL_VERSION=1.1.1s
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
@@ -22,6 +24,7 @@ RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt \
     --mount=type=cache,target=/var/lib/apt/lists,id=ubuntu22-apt-lists \
     apt-get update -y \
     && apt-get install -y wget tar gzip \
+    $EXTRA_PACKAGES \
     libncurses5 libnuma-dev \
     bc \
     sudo
