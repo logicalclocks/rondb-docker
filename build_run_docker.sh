@@ -49,6 +49,7 @@ Usage: $0
     [-b         --run-benchmark             <string>
                     Options: <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>
                                                     ]
+    [-pd        --pull-dockerhub-image              ]
     [-rtarl     --rondb-tarball-is-local            ]
     [-lv        --volumes-in-local-dir              ]
     [-sf        --save-sample-files                 ]
@@ -74,6 +75,7 @@ REPLICATION_FACTOR=1
 NODE_GROUPS=1
 RUN_BENCHMARK=
 VOLUME_TYPE=docker
+PULL_DOCKERHUB_IMAGE=
 SAVE_SAMPLE_FILES=
 DETACHED=
 
@@ -128,10 +130,16 @@ while [[ $# -gt 0 ]]; do
         shift # past value
         ;;
 
+    -pd | --pull-dockerhub-image)
+        PULL_DOCKERHUB_IMAGE=1
+        shift # past argument
+        ;;
+
     -rtarl | --rondb-tarball-is-local)
         RONDB_TARBALL_LOCAL_REMOTE=local
         shift # past argument
         ;;
+
     -d | --detached)
         DETACHED="-d"
         shift # past argument
@@ -171,6 +179,7 @@ print-parsed-arguments() {
     echo "Number of api nodes           = ${NUM_API_NODES}"
     echo "Run benchmark                 = ${RUN_BENCHMARK}"
     echo "Volume type docker/local      = ${VOLUME_TYPE}"
+    echo "Pull Dockerhub image          = ${PULL_DOCKERHUB_IMAGE}"
     echo "Save sample files             = ${SAVE_SAMPLE_FILES}"
     echo "Run detached                  = ${DETACHED}"
     echo
@@ -187,6 +196,18 @@ if [[ -n $1 ]]; then
     exit 1
 fi
 
+if [ -n "$PULL_DOCKERHUB_IMAGE" ]; then
+    if [ -n "$RONDB_TARBALL_URI" ]; then
+        echo "Cannot specify both a tarball URI and pull from Dockerhub"
+        exit 1
+    fi
+else
+    if [ ! -n "$RONDB_TARBALL_URI" ]; then
+        echo "Either a tarball URI must be specified or set the flag to pull the image from Dockerhub"
+        exit 1
+    fi
+fi
+
 if [ "$NUM_MGM_NODES" -lt 1 ]; then
     echo "At least 1 mgmd is required"
     exit 1
@@ -195,9 +216,6 @@ elif [ "$REPLICATION_FACTOR" -lt 1 ] || [ "$REPLICATION_FACTOR" -gt 4 ]; then
     exit 1
 elif [ "$NODE_GROUPS" -lt 1 ]; then
     echo "At least 1 node group is required"
-    exit 1
-elif [ -z "$RONDB_TARBALL_URI" ]; then
-    echo "The parameter --rondb-tarball-uri is not optional"
     exit 1
 fi
 
@@ -305,12 +323,17 @@ BENCH_DIR="/home/mysql/benchmarks"
 
 echo "Building RonDB Docker image for local platform"
 
-RONDB_IMAGE_NAME="rondb-standalone:$RONDB_VERSION"
-docker buildx build . \
-    --tag "$RONDB_IMAGE_NAME" \
-    --build-arg RONDB_VERSION="$RONDB_VERSION" \
-    --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
-    --build-arg RONDB_TARBALL_URI="$RONDB_TARBALL_URI"
+if [ -n "$PULL_DOCKERHUB_IMAGE" ]; then
+    RONDB_IMAGE_NAME="hopsworks/rondb-standalone:$RONDB_VERSION"
+    docker pull $RONDB_IMAGE_NAME
+else
+    RONDB_IMAGE_NAME="rondb-standalone:$RONDB_VERSION"
+    docker buildx build . \
+        --tag $RONDB_IMAGE_NAME \
+        --build-arg RONDB_VERSION=$RONDB_VERSION \
+        --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
+        --build-arg RONDB_TARBALL_URI=$RONDB_TARBALL_URI
+fi
 
 #######################
 #######################
