@@ -170,6 +170,7 @@ print-parsed-arguments() {
     echo "#################"
     echo
     echo "RonDB version                 = ${RONDB_VERSION}"
+    echo "Pull Dockerhub image          = ${PULL_DOCKERHUB_IMAGE}"
     echo "RonDB tarball local/remote    = ${RONDB_TARBALL_LOCAL_REMOTE}"
     echo "RonDB tarball URI             = ${RONDB_TARBALL_URI}"
     echo "Number of management nodes    = ${NUM_MGM_NODES}"
@@ -179,7 +180,6 @@ print-parsed-arguments() {
     echo "Number of api nodes           = ${NUM_API_NODES}"
     echo "Run benchmark                 = ${RUN_BENCHMARK}"
     echo "Volume type docker/local      = ${VOLUME_TYPE}"
-    echo "Pull Dockerhub image          = ${PULL_DOCKERHUB_IMAGE}"
     echo "Save sample files             = ${SAVE_SAMPLE_FILES}"
     echo "Run detached                  = ${DETACHED}"
     echo
