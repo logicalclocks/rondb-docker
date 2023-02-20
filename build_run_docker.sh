@@ -323,11 +323,11 @@ BENCH_DIR="/home/mysql/benchmarks"
 
 echo "Building RonDB Docker image for local platform"
 
+RONDB_IMAGE_NAME="rondb-standalone:$RONDB_VERSION"
 if [ -n "$PULL_DOCKERHUB_IMAGE" ]; then
-    RONDB_IMAGE_NAME="hopsworks/rondb-standalone:$RONDB_VERSION"
+    RONDB_IMAGE_NAME="hopsworks/$RONDB_IMAGE_NAME"
     docker pull $RONDB_IMAGE_NAME
 else
-    RONDB_IMAGE_NAME="rondb-standalone:$RONDB_VERSION"
     docker buildx build . \
         --tag $RONDB_IMAGE_NAME \
         --build-arg RONDB_VERSION=$RONDB_VERSION \
