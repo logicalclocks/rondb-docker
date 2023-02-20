@@ -1,10 +1,10 @@
-name: Testing and Deploying Cluster
+name: Building Image, Running Benchmarks and Deploying to Dockerhub
 on:
   push:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened, edited, closed]
+    types: [opened, synchronize, reopened, edited]
 
 env:
   RONDB_VERSION_LTS: 21.04.10
@@ -72,13 +72,13 @@ jobs:
 
       - name: Login to Dockerhub
         uses: docker/login-action@v2
-        if: github.repository == 'logicalclocks/rondb-docker' && github.event.pull_request.merged == true
+        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         with:
           username: hopsworks
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build AMD64 image for RONDB_VERSION_STABLE
-        if: github.repository == 'logicalclocks/rondb-docker' && github.event.pull_request.merged == true
+        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         run: |
           docker buildx build . \
               --tag rondb-standalone:$RONDB_VERSION_STABLE \
@@ -87,7 +87,7 @@ jobs:
               --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.17-x86_64.tar.gz
       
       - name: Push AMD64 images to Dockerhub
-        if: github.repository == 'logicalclocks/rondb-docker' && github.event.pull_request.merged == true
+        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         run: |
           docker tag rondb-standalone:$RONDB_VERSION_LTS hopsworks/rondb-standalone:$RONDB_VERSION_LTS
           docker tag rondb-standalone:$RONDB_VERSION_STABLE hopsworks/rondb-standalone:$RONDB_VERSION_STABLE
@@ -98,7 +98,7 @@ jobs:
 
   build-and-push-ARM64:
     runs-on: ubuntu-latest
-    if: github.repository == 'logicalclocks/rondb-docker' && github.event.pull_request.merged == true
+    if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
     needs: [integration-test-and-package]
     steps:
       - uses: actions/checkout@v3
