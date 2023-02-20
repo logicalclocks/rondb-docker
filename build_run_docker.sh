@@ -1,6 +1,6 @@
 #!/bin/bash
 # Generating RonDB clusters of variable sizes with docker compose
-# Copyright (c) 2022 Hopsworks AB and/or its affiliates.
+# Copyright (c) 2022, 2023 Hopsworks AB and/or its affiliates.
 
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -54,6 +54,11 @@ Usage: $0
     [-lv        --volumes-in-local-dir              ]
     [-sf        --save-sample-files                 ]
     [-d         --detached                          ]
+    [-s         --size                      <string>]
+
+    The size parameter is only intended for the wrapper
+    script run.sh that makes it very easy to set up
+    different sizes of the RonDB cluster resources.
 EOF
 }
 
@@ -78,6 +83,8 @@ VOLUME_TYPE=docker
 PULL_DOCKERHUB_IMAGE=
 SAVE_SAMPLE_FILES=
 DETACHED=
+RONDB_SIZE=small
+RONDB_VERSION=latest
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -154,6 +161,10 @@ while [[ $# -gt 0 ]]; do
         SAVE_SAMPLE_FILES=1
         shift # past argument
         ;;
+    -s | --size)
+        RONDB_SIZE="$2"
+        shift # past argument
+        ;;
 
     *)                     # unknown option
         POSITIONAL+=("$1") # save it in an array for later
@@ -182,6 +193,7 @@ print-parsed-arguments() {
     echo "Volume type docker/local      = ${VOLUME_TYPE}"
     echo "Save sample files             = ${SAVE_SAMPLE_FILES}"
     echo "Run detached                  = ${DETACHED}"
+    echo "Run with RonDB size           = ${RONDB_SIZE}"
     echo
 }
 print-parsed-arguments
@@ -216,6 +228,15 @@ elif [ "$REPLICATION_FACTOR" -lt 1 ] || [ "$REPLICATION_FACTOR" -gt 4 ]; then
     exit 1
 elif [ "$NODE_GROUPS" -lt 1 ]; then
     echo "At least 1 node group is required"
+    exit 1
+fi
+
+if [ "$RONDB_SIZE" != "small" ] && \
+   [ "$RONDB_SIZE" != "mini" ] && \
+   [ "$RONDB_SIZE" != "medium" ] && \
+   [ "$RONDB_SIZE" != "large" ] && \
+   [ "$RONDB_SIZE" != "xlarge" ]; then
+    echo "size has to be one of <mini, small, medium, large, xlarge>"
     exit 1
 fi
 
@@ -313,6 +334,14 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         cp "$SCRIPT_DIR/resources/config_templates/dbt2_run_1.conf.multi" "$DBT2_CONF_MULTI_FILEPATH"
     fi
 fi
+
+# Copy resource files dependent on size
+cp ./resources/config_templates/autobench_dbt2.conf.$RONDB_SIZE ./resources/config_templates/autobench_dbt2.conf
+cp ./resources/config_templates/autobench_sysbench.conf.$RONDB_SIZE ./resources/config_templates/autobench_sysbench.conf
+cp ./resources/config_templates/dbt2_run_1.conf.multi.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.multi.conf
+cp ./resources/config_templates/dbt2_run_1.conf.single.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.conf.single
+cp ./resources/config_templates/config.ini.$RONDB_SIZE ./resources/config_templates/config.ini
+cp $SCRIPT_DIR/docker.env.$RONDB_SIZE $SCRIPT_DIR/docker.env
 
 DATA_DIR="/srv/hops/mysql-cluster"
 BENCH_DIR="/home/mysql/benchmarks"
