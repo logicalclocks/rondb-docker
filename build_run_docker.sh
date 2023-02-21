@@ -164,6 +164,7 @@ while [[ $# -gt 0 ]]; do
     -s | --size)
         RONDB_SIZE="$2"
         shift # past argument
+        shift # past value
         ;;
 
     *)                     # unknown option
@@ -324,6 +325,14 @@ AUTOBENCH_SYS_MULTI_FILEPATH="$SYSBENCH_MULTI_DIR/autobench.conf"
 AUTOBENCH_DBT2_SINGLE_FILEPATH="$DBT2_SINGLE_DIR/autobench.conf"
 AUTOBENCH_DBT2_MULTI_FILEPATH="$DBT2_MULTI_DIR/autobench.conf"
 
+# Copy resource files dependent on size
+cp ./resources/config_templates/autobench_dbt2.conf.$RONDB_SIZE ./resources/config_templates/autobench_dbt2.conf
+cp ./resources/config_templates/autobench_sysbench.conf.$RONDB_SIZE ./resources/config_templates/autobench_sysbench.conf
+cp ./resources/config_templates/dbt2_run_1.conf.multi.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.conf.multi
+cp ./resources/config_templates/dbt2_run_1.conf.single.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.conf.single
+cp ./resources/config_templates/config.ini.$RONDB_SIZE ./resources/config_templates/config.ini
+cp $SCRIPT_DIR/docker.env.$RONDB_SIZE $SCRIPT_DIR/docker.env
+
 # Since we are mounting the entire benchmarking directories, these files would be
 # overwritten if they are added via the Dockerfile.
 DBT2_CONF_SINGLE_FILEPATH="$DBT2_SINGLE_DIR/dbt2_run_1.conf"
@@ -334,14 +343,6 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         cp "$SCRIPT_DIR/resources/config_templates/dbt2_run_1.conf.multi" "$DBT2_CONF_MULTI_FILEPATH"
     fi
 fi
-
-# Copy resource files dependent on size
-cp ./resources/config_templates/autobench_dbt2.conf.$RONDB_SIZE ./resources/config_templates/autobench_dbt2.conf
-cp ./resources/config_templates/autobench_sysbench.conf.$RONDB_SIZE ./resources/config_templates/autobench_sysbench.conf
-cp ./resources/config_templates/dbt2_run_1.conf.multi.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.multi.conf
-cp ./resources/config_templates/dbt2_run_1.conf.single.$RONDB_SIZE ./resources/config_templates/dbt2_run_1.conf.single
-cp ./resources/config_templates/config.ini.$RONDB_SIZE ./resources/config_templates/config.ini
-cp $SCRIPT_DIR/docker.env.$RONDB_SIZE $SCRIPT_DIR/docker.env
 
 DATA_DIR="/srv/hops/mysql-cluster"
 BENCH_DIR="/home/mysql/benchmarks"
