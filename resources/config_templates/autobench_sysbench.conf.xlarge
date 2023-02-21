@@ -55,9 +55,9 @@ NDB_MGMD_NODES="%s"
 ##############################
 
 SYSBENCH_TEST="oltp_rw"
-THREAD_COUNTS_TO_RUN="1;2;4;8;12;16;24;32"
+THREAD_COUNTS_TO_RUN="1;2;4;8;12;16;24;32;48;64;96;128;160;192;224;256"
 MAX_TIME="30"
-SYSBENCH_ROWS="10000"
+SYSBENCH_ROWS="1000000"
 SYSBENCH_INSTANCES="%s"
 
 # PARAMETER                 EXAMPLE                         DESCRIPTION                             

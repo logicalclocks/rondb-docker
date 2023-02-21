@@ -46,6 +46,7 @@ RONDB_VERSION=latest
 REPLICATION_FACTOR=2
 DOCKER_PULLHUB=yes
 RONDB_TARBALL=
+NUM_MYSQL_SERVERS=2
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -88,14 +89,15 @@ if [ "$RONDB_SIZE" != "small" ] && \
 fi
 
 if [ "$RONDB_SIZE" = "mini" ]; then
-    REPLICATION_FACTOR="1"
+    REPLICATION_FACTOR=1
+    NUM_MYSQL_SERVERS=1
 fi
 EXEC_CMD="./build_run_docker.sh"
 EXEC_CMD="$EXEC_CMD --rondb-version $RONDB_VERSION"
 EXEC_CMD="$EXEC_CMD --num-mgm-nodes 1"
 EXEC_CMD="$EXEC_CMD --node-groups 1"
 EXEC_CMD="$EXEC_CMD --replication-factor $REPLICATION_FACTOR"
-EXEC_CMD="$EXEC_CMD --num-mysql-nodes 2"
+EXEC_CMD="$EXEC_CMD --num-mysql-nodes $NUM_MYSQL_SERVERS"
 if [ "$DOCKER_PULLHUB" = "yes" ]; then
   EXEC_CMD="$EXEC_CMD --pull-dockerhub-image"
 else

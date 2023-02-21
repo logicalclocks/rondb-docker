@@ -1,4 +1,13 @@
 # NUM_MYSQL_SERVERS  NUM_WAREHOUSES  NUM_TERMINALS
 2                    1               1
 2                    2               1
-2                    2               2
+2                    4               1
+2                    6               1
+2                    8               1
+2                    12              1
+2                    16              1
+2                    24              1
+2                    32              1
+2                    48              1
+2                    64              1
+2                    64              2
