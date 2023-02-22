@@ -21,7 +21,7 @@ RUN echo "TARGETARCH: $TARGETARCH; TARGETVARIANT: $TARGETVARIANT"
 RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt \
     --mount=type=cache,target=/var/lib/apt/lists,id=ubuntu22-apt-lists \
     apt-get update -y \
-    && apt-get install -y wget tar gzip \
+    && apt-get install -y wget tar gzip vim \
     libaio1 libaio-dev \
     libncurses5 libnuma-dev \
     bc \
@@ -63,6 +63,7 @@ RUN --mount=type=cache,target=$DOWNLOADS_CACHE_DIR \
     # `make install` places shared libraries into $OPENSSL_ROOT
 
 ENV LD_LIBRARY_PATH=$OPENSSL_ROOT/lib/:$LD_LIBRARY_PATH
+RUN echo "/usr/local/ssl/lib" > /etc/ld.so.conf
 RUN ldconfig --verbose
 
 # Copying bare minimum of Hopsworks cloud environment for now
@@ -72,6 +73,9 @@ RUN groupadd mysql && adduser mysql --ingroup mysql
 ENV HOPSWORK_DIR=/srv/hops
 ENV RONDB_BIN_DIR=$HOPSWORK_DIR/mysql-$RONDB_VERSION
 RUN mkdir -p $RONDB_BIN_DIR
+
+# Add to PATH and LD_LIBRARY_PATH in mysql user
+RUN echo "export PATH=/srv/hops/mysql/bin:\$PATH" >> /home/mysql/.profile
 
 # Get RonDB tarball from local path & unpack it
 FROM cloud_preparation as local_tarball
