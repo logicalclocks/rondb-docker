@@ -3,7 +3,7 @@
 This repository creates the possibility of:
 - building cross-platform RonDB images
 - running local (non-production) RonDB clusters with docker-compose
-- benchmarking RonDB with Sysbench and DBT2
+- benchmarking RonDB with Sysbench and DBT2 on localhost
 - demo the usage of managed RonDB (upcoming)
 
 To learn more about RonDB, have a look at [rondb.com](https://rondb.com).
@@ -11,7 +11,50 @@ To learn more about RonDB, have a look at [rondb.com](https://rondb.com).
 ## Quickstart
 
 Dependencies:
-- Docker, docker-compose, Docker Buildx
+- Docker, docker-compose, Docker Buildx (if you use DockerHub this dependency isn't there)
+
+The run.sh script makes it very easy to start a RonDB cluster in Docker Compose using 3 commands:
+1. git clone https://github.com/logicalclocks/rondb-docker rondb-docker
+2. cd rondb-docker
+3. ./run.sh
+
+The run.sh makes it very easy to run with 5 different user profiles.
+1. mini This profile starts a RonDB cluster with 1 data node, 1 MGM Server, 1 MySQL Server and
+        1 API node. It uses around 2.5 GB of memory and up to 4 CPUs.
+        This profile is intended for busy development machines and machines with down to 8 GB of
+        memory.
+
+2. small This is the default setup. It uses about 6 GB of memory and up to 16 CPUs. This setup
+         and all larger setups have 1 MGM server, 2 data nodes, 2 MySQL Server and 1 API node.
+         This profile is intended for development machines with at least 16 GB of memory and
+         up to 16 CPUs.
+
+3. medium This profile is intended for development machines with 32 GB of memory and up to 16
+          CPUs. It uses about 16 GB of memory and up to 16 CPUs.
+
+4. large This profile is intended for development machines with up to 32 CPUs and at least 32 GB
+         of memory. It will use up to 20 GB of memory and up to 32 CPUs.
+
+5. xlarge This profile is intended for workstations with at least 64 GB of memory and up to
+          64 CPUs. It will use up to 30 GB of memory and up to 50 CPUs.
+
+This Docker environment is intended for developers wanting to develop applications towards RonDB.
+It is used also for development of RonDB and its REST API server functionality. This means that
+it is frequently used with Docker Desktop on Mac OS X using ARM CPUs, on Windows laptops using
+Docker Desktop in combination with WSL 2 and on Linux laptops and desktops and workstations.
+It can also be used in Cloud VMs.
+
+A simple command to run this is:
+./run.sh --size medium
+
+This will create a RonDB cluster with the above characteristics using Docker images from DockerHub.
+It uses the Docker images hopsworks/rondb-standalone. You can naturally create your own environment
+either based on this work or write something new from scratch using Docker commands.
+
+The rest of this README file describes the base script build_run_docker.sh that is more flexible,
+however using this one need to ensure that the development machine has sufficient memory to house
+the desired configuration. See resources/config_templates for configuration templates used by
+run.sh.
 
 Important:
 - Every container requires an amount of memory; to adjust the amount of resources that Docker allocates to each of the different containers, see the [docker.env](docker.env) file. To check the amount actually allocated for the respective containers, run `docker stats` after having started a docker-compose instance. To adjust the allowed memory limits for Docker containers, do as described [here](https://stackoverflow.com/a/44533437/9068781). It should add up to the reserved aggregate amount of memory required by all Docker containers. As a reference, allocating around 27GB of memory in the Docker settings can support 1 mgmd, 2 mysqlds and 9 data nodes (3 node groups x 3 replicas).
@@ -43,10 +86,10 @@ Commands to run:
   --num-api-nodes 1
 
 # Build cross-platform image (linux/arm64 here)
-docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.6 \
-  --build-arg RONDB_VERSION=21.04.6 \
+docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.10 \
+  --build-arg RONDB_VERSION=21.04.10 \
   --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \  # alternatively "local"
-  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.6-linux-glibc2.31-arm64_v8.tar.gz # alternatively a local file path
+  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.10-linux-glibc2.35-arm64_v8.tar.gz # alternatively a local file path
 
 # Explore image
 docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.10
