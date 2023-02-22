@@ -22,6 +22,7 @@ Usage: $0
     [-h         --help                              ]
     [-v         --rondb-version             <string>]
     [-r         --rondb-local-tarball       <string>]
+    [-b         --benchmark                 <string>]
     [-s         --size                      <string>]
 
 RonDB running in Docker Compose is intended for development
@@ -47,6 +48,7 @@ REPLICATION_FACTOR=2
 DOCKER_PULLHUB=yes
 RONDB_TARBALL=
 NUM_MYSQL_SERVERS=2
+BENCHMARK=
 
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -66,6 +68,11 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
+    -b | --benchmark)
+        BENCHMARK="$2"
+        shift # past argument
+        shift # past value
+        ;;
     -r | --rondb-local-tarball)
         DOCKER_PULLHUB=no
         RONDB_TARBALL="$2"
@@ -78,6 +85,15 @@ while [[ $# -gt 0 ]]; do
         ;;
     esac
 done
+
+if [ "$BENCHMARK" != "" ] && \
+   [ "$BENCHMARK" != "sysbench_single" ] && \
+   [ "$BENCHMARK" != "sysbench_multi" ] && \
+   [ "$BENCHMARK" != "dbt2_single" ] && \
+   [ "$BENCHMARK" != "dbt2_multi" ]; then
+    echo "benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>"
+    exit 1
+fi
 
 if [ "$RONDB_SIZE" != "small" ] && \
    [ "$RONDB_SIZE" != "mini" ] && \
@@ -94,6 +110,7 @@ if [ "$RONDB_SIZE" = "mini" ]; then
 fi
 EXEC_CMD="./build_run_docker.sh"
 EXEC_CMD="$EXEC_CMD --rondb-version $RONDB_VERSION"
+EXEC_CMD="$EXEC_CMD --size $RONDB_SIZE"
 EXEC_CMD="$EXEC_CMD --num-mgm-nodes 1"
 EXEC_CMD="$EXEC_CMD --node-groups 1"
 EXEC_CMD="$EXEC_CMD --replication-factor $REPLICATION_FACTOR"
@@ -104,7 +121,9 @@ else
   EXEC_CMD="$EXEC_CMD --rondb-tarball-is-local"
   EXEC_CMD="$EXEC_CMD --rondb-tarball-uri $RONDB_TARBALL"
 fi
-EXEC_CMD="$EXEC_CMD --size $RONDB_SIZE"
+if [ "$BENCHMARK" != "" ]; then
+  EXEC_CMD="$EXEC_CMD --run-benchmark $BENCHMARK"
+fi
 EXEC_CMD="$EXEC_CMD --num-api-nodes 1"
 echo "Executing command: $EXEC_CMD"
 eval $EXEC_CMD
