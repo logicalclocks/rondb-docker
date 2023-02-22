@@ -98,8 +98,8 @@ if [ "$RONDB_SIZE" != "small" ] && \
    [ "$RONDB_SIZE" != "mini" ] && \
    [ "$RONDB_SIZE" != "medium" ] && \
    [ "$RONDB_SIZE" != "large" ] && \
-   [ "$RONDB_SIZE" != "workstation" ]; then
-    echo "size has to be one of <mini, small, medium, large, workstation>"
+   [ "$RONDB_SIZE" != "xlarge" ]; then
+    echo "size has to be one of <mini, small, medium, large, xlarge>"
     exit 1
 fi
 
