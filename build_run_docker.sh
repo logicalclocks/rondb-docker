@@ -47,7 +47,7 @@ Usage: $0
     [-my        --num-mysql-nodes           <int>   ]
     [-a         --num-api-nodes             <int>   ]
     [-b         --run-benchmark             <string>
-                    Options: <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>
+                    Options: <sysbench_single, sysbench_multi, dbt2_single>
                                                     ]
     [-pd        --pull-dockerhub-image              ]
     [-rtarl     --rondb-tarball-is-local            ]
@@ -245,8 +245,7 @@ if [ -n "$RUN_BENCHMARK" ]; then
     if [ "$RUN_BENCHMARK" != "sysbench_single" ] && \
        [ "$RUN_BENCHMARK" != "sysbench_multi" ] && \
        [ "$RUN_BENCHMARK" != "dbt2_single" ] && \
-       [ "$RUN_BENCHMARK" != "dbt2_multi" ]; then
-        echo "Benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>"
+        echo "Benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single>"
         exit 1
     elif [ "$NUM_API_NODES" -lt 1 ]; then
         echo "At least one api is required to run benchmarks"

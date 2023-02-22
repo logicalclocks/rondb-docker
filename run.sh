@@ -90,8 +90,7 @@ if [ "$BENCHMARK" != "" ] && \
    [ "$BENCHMARK" != "sysbench_single" ] && \
    [ "$BENCHMARK" != "sysbench_multi" ] && \
    [ "$BENCHMARK" != "dbt2_single" ] && \
-   [ "$BENCHMARK" != "dbt2_multi" ]; then
-    echo "benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single, dbt2_multi>"
+    echo "benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single>"
     exit 1
 fi
 

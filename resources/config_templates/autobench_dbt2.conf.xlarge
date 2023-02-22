@@ -55,5 +55,5 @@ NDB_MGMD_NODES="%s"
 ##############################
 
 DBT2_TIME="30"
-DBT2_WAREHOUSES="128"
+DBT2_WAREHOUSES="64"
 DBT2_DATA_DIR=/home/mysql/benchmarks/dbt2_data

@@ -49,7 +49,7 @@ AutomaticMemoryConfig=true
 # NumCPUs impacts both thread configuration and memory configuration. Thus
 # raising NumCPUs means more memory is required in the data node.
 NumCPUs=8
-TotalMemoryConfig=12800M
+TotalMemoryConfig=14000M
 MaxNoOfTables=768
 MaxNoOfAttributes=8000
 MaxNoOfTriggers=4000
