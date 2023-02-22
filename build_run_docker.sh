@@ -244,7 +244,7 @@ fi
 if [ -n "$RUN_BENCHMARK" ]; then
     if [ "$RUN_BENCHMARK" != "sysbench_single" ] && \
        [ "$RUN_BENCHMARK" != "sysbench_multi" ] && \
-       [ "$RUN_BENCHMARK" != "dbt2_single" ] && \
+       [ "$RUN_BENCHMARK" != "dbt2_single" ]; then
         echo "Benchmark has to be one of <sysbench_single, sysbench_multi, dbt2_single>"
         exit 1
     elif [ "$NUM_API_NODES" -lt 1 ]; then

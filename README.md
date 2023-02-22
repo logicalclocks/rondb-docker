@@ -51,6 +51,10 @@ This will create a RonDB cluster with the above characteristics using Docker ima
 It uses the Docker images hopsworks/rondb-standalone. You can naturally create your own environment
 either based on this work or write something new from scratch using Docker commands.
 
+The printouts in the console that runs the docker containers is the node logs, these kind a lot
+of informational messages about temporary situations of overload, waiting for a free node id and
+many other messages.
+
 The rest of this README file describes the base script build_run_docker.sh that is more flexible,
 however using this one need to ensure that the development machine has sufficient memory to house
 the desired configuration. See resources/config_templates for configuration templates used by
