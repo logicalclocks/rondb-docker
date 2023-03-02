@@ -4,17 +4,17 @@ RonDB-Docker version: 0.2-SNAPSHOT
 Parsed arguments:
 #################
 
-RonDB version                 = 21.04.10
-Pull Dockerhub image          = 
-RonDB tarball local/remote    = local
-RonDB tarball URI             = ./rondb-21.04.10-linux-glibc2.35-arm64_v8.tar.gz
+RonDB version                 = latest
+RonDB tarball path            = 
+RonDB tarball url             = 
 Number of management nodes    = 1
 Node groups                   = 1
 Replication factor            = 2
-Number of mysql nodes         = 1
+Number of mysql nodes         = 2
 Number of api nodes           = 1
-Run benchmark                 = sysbench_single
+Run benchmark                 = sysbench_multi
 Volume type docker/local      = local
 Save sample files             = 1
 Run detached                  = 
+Run with RonDB size           = small
 
