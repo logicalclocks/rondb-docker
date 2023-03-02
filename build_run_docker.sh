@@ -403,6 +403,13 @@ VOLUME_TEMPLATE="
         source: %s
         target: %s"
 
+PORTS_FIELD="
+      ports:"
+
+# HOST:CONTAINER
+PORTS_TEMPLATE="
+      - %s:%s"
+
 ENV_FIELD="
       environment:
       - HOST_GROUP_ID=$(id -g)"
@@ -599,6 +606,11 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
         add_file_to_template "$MY_CNF_FILEPATH" "$DATA_DIR/my.cnf"
         add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/mysql" no
         add_volume_to_template "mysqlFilesDir_$SERVICE_NAME" "$DATA_DIR/mysql-files" no
+
+        template+="$PORTS_FIELD"
+        ports=$(printf "$PORTS_TEMPLATE" "$EXPOSE_MYSQLD_PORTS_STARTING_AT" "3306")
+        template+="$ports"
+        EXPOSE_MYSQLD_PORTS_STARTING_AT=$((EXPOSE_MYSQLD_PORTS_STARTING_AT + 1))
 
         # Can add the following env vars to the mysqld containers:
         # MYSQL_ROOT_PASSWORD
