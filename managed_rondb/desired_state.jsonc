@@ -22,6 +22,14 @@
     "HopsworksNodeIp": "",
     "SearchDomain": "",
     "SingleBackups": [
+        /*
+            This is an example of a backup that is saved on a Docker volume.
+            As this is the first desired state, this backup will be run right
+            away and therefore almost be empty.
+            If it is removed in a following desired state, the backup will be
+            deleted. 
+            The same backup can be referenced in the field "RestoreFromBackup".
+        */
         {
             "Id": 123,
             "SinkType": "docker",
@@ -30,6 +38,20 @@
             }
         }
     ],
+    /*
+        This backup has to exist before it can be set here. This field can only be
+        set if RonDBRunning has never been set to true before. Therefore, a cluster
+        can never restore its own backup.
+        Make sure that this backup is also referenced in SingleBackups.
+
+        "RestoreFromBackup": {
+            "Id": BACKUP_ID,
+            "SinkType": "docker",
+            "SinkParameters": {
+                "TestParameter": "test-value"
+            }
+        },
+    */
     "TotalMemoryConfig": "2400M",
     "ActiveReplicationFactor": 1,
     "MaxReplicationFactor": 3,
