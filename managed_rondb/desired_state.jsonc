@@ -1,0 +1,84 @@
+{
+    // Change the Id for every new desired state
+    "Id": 1,
+    "Description": "our first initial desired state",
+    "RonDBRunning": true,
+    "RonDBRunningSince": 1,
+    "RonDBVersion": "22.10.1",
+    /*
+        The url nginx/hopsworks_proxy is a reverse proxy to repo.hops.works, 
+        which is where Hopsworks hosts RonDB builds:
+    */
+    "RonDBDownloadLink": "http://nginx/hopsworks_proxy/master/rondb-22.10.1-linux-glibc2.35-arm64_v8.tar.gz",
+    "NdbAgentRunningSince": 1,
+    /*
+        Version 0.999 is an imaginary version which is identical to the current
+        build and is stored on the nginx server. It can be used to test rolling
+        software upgrades of the ndb-agent.
+    */
+    "NdbAgentVersion": "0.999",
+    "NdbAgentDownloadLink": "http://nginx/local/ndb-agent-0.999.tgz",
+    "GrantUserPriviligesApiBenchmarking": false,
+    "HopsworksNodeIp": "",
+    "SearchDomain": "",
+    "SingleBackups": [
+        {
+            "Id": 123,
+            "SinkType": "docker",
+            "SinkParameters": {
+                "TestParameter": "test-value"
+            }
+        }
+    ],
+    "TotalMemoryConfig": "2400M",
+    "ActiveReplicationFactor": 1,
+    "MaxReplicationFactor": 3,
+    "NumNodeGroups": 1,
+    /*
+        Make sure that these nodes exist as containers before specifying them in the desired state.
+        The nodes specified here are listed in the docker-compose file.
+
+        However, in case the "Ip" field is empty, no container is required and they will 
+        correspond to slots without Hostnames in the config.ini. This only works for mysqld
+        and ndb_api slots though.
+
+        Possible RonDBTypes: ndb_mgm, ndb_ndbd, mysqld, ndb_api
+    */
+    "ExternallyManagedNodes": [
+        // This bootstrap container can currently not be removed
+        {
+            "RonDBType": "ndb_mgm",
+            "Ip": "bootstrap_mgm",
+            "Port": 1186
+        }
+    ],
+    "NumTotalMgmdSlots": 2,
+    "NumTotalMysqldSlots": 10,
+    "NumTotalApiSlots": 16,
+    "AllowRequestingTemporaryVms": true,
+    "Region": "europe-1",
+    "AvailabilityZones": [
+        "soedermalm"
+    ],
+    /*
+        Supported VM types: mini, medium, large, xlarge, xxlarge
+        These have differences in container memory limits.
+
+        Only increase the VmType; reducing beyond the defaults may crash
+        the programs running on the corresponding container.
+    */
+    "VmTypeMgmds": "mini",
+    "VmTypeApis": "medium",
+    "VmTypeMysqlds": "large",
+    "VmTypeNdbds": "xlarge",
+    "NumManagedMgmdVms": 0,
+    "NumManagedMysqldVms": 1,
+    "NumManagedApiVms": 1,
+    "StorageGiBPerMgmdVm": 4,
+    "StorageGiBPerNdbdVm": 30,
+    "StorageGiBPerMysqldVm": 15,
+    "StorageGiBPerApiVm": 10,
+    "DefaultMgmdPort": 1186,
+    "DefaultNdbdPort": 11860,
+    "DefaultMysqldPort": 3306
+}

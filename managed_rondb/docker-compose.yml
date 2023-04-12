@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+  flask-server-rondb:
+    image: hopsworks/flask-server-rondb:latest
+    container_name: flask-server-rondb
+    command: ["--no-active-test-worker"]
+    environment:
+      IMAGE_TO_SPAWN: rondb-managed:latest
+      CLOUD_BASE_URL: "http://flask-server-rondb:8000"
+    ports:
+      # Host:Docker
+      - 8000:8000
+    volumes:
+      - ./desired_state.jsonc:/home/flask_server/desired_state.jsonc
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # Host ndb-agent & RonDB tarballs for up/downgrades
+  nginx:
+    image: hopsworks/nginx-rondb:latest
+    container_name: nginx
+    restart: "no"
+    expose:
+      - 80
+
+  bootstrap_mgm:
+    image: hopsworks/rondb-managed:latest
+    container_name: bootstrap_mgm
+    environment:
+      CONTAINER_NAME: bootstrap_mgm
+      IS_LEADER: "true"
+      CLOUD_BASE_URL: "http://flask-server-rondb:8000"
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+    volumes:
+      - dummy_sink:/home/sink
+
+volumes:
+  dummy_sink:
+
+
+networks:
+  default:
+    attachable: true
