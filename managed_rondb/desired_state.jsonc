@@ -1,7 +1,6 @@
 {
     // Change the Id for every new desired state
     "Id": 1,
-    "Description": "our first initial desired state",
     "RonDBRunning": true,
     "RonDBRunningSince": 1,
     "RonDBVersion": "22.10.1",
