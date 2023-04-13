@@ -1,25 +1,32 @@
 {
-    // Change the Id for every new desired state
+    /*
+        Increment the Id for every new desired state, otherwise it will be ignored.
+        This also works as a reference to "RunningSince" fields - these can never be
+        higher than the Id.
+    */
     "Id": 1,
     "RonDBRunning": true,
+    // A logical clock to perform rolling restarts of RonDB; it can never be higher than the Id
     "RonDBRunningSince": 1,
+    // Make sure to adjust RonDBDownloadLink when changing this
     "RonDBVersion": "22.10.1",
     /*
         The url nginx/hopsworks_proxy is a reverse proxy to repo.hops.works, 
         which is where Hopsworks hosts RonDB builds:
     */
     "RonDBDownloadLink": "http://nginx/hopsworks_proxy/master/rondb-22.10.1-linux-glibc2.35-arm64_v8.tar.gz",
+    // A logical clock to perform rolling restarts of the ndb-agent; it can never be higher than the Id
     "NdbAgentRunningSince": 1,
     /*
         Version 0.999 is an imaginary version which is identical to the current
         build and is stored on the nginx server. It can be used to test rolling
-        software upgrades of the ndb-agent.
+        software upgrades of the ndb-agent. The other available version is 1.0.
+
+        Make sure to adjust NdbAgentDownloadLink when changing this
     */
     "NdbAgentVersion": "0.999",
     "NdbAgentDownloadLink": "http://nginx/local/ndb-agent-0.999.tgz",
-    "GrantUserPriviligesApiBenchmarking": false,
-    "HopsworksNodeIp": "",
-    "SearchDomain": "",
+
     "SingleBackups": [
         /*
             This is an example of a backup that is saved on a Docker volume.
@@ -44,17 +51,22 @@
         Make sure that this backup is also referenced in SingleBackups.
 
         "RestoreFromBackup": {
-            "Id": BACKUP_ID,
+            "Id": 123,
             "SinkType": "docker",
             "SinkParameters": {
                 "TestParameter": "test-value"
             }
         },
     */
+
+    /*
+        RonDB-native configuration parameter to avoid data nodes from allocating all
+        the memory in their containers. Some memory is also needed for the ndb-agent.
+    */
     "TotalMemoryConfig": "2400M",
-    "ActiveReplicationFactor": 1,
-    "MaxReplicationFactor": 3,
-    "NumNodeGroups": 1,
+    "ActiveReplicationFactor": 1,  // Can be changed to add replicas to every node group
+    "MaxReplicationFactor": 3, // Immutable
+    "NumNodeGroups": 1, // Immutable
     /*
         Make sure that these nodes exist as containers before specifying them in the desired state.
         The nodes specified here are listed in the docker-compose file.
@@ -73,16 +85,33 @@
             "Port": 1186
         }
     ],
+    /*
+        Immutable fields. This is a RonDB-native parameter which creates slots
+        in the config.ini. We set a number to allow scaling up/down when the
+        cluster is running. If they are not used, they are deactivated.
+    */
     "NumTotalMgmdSlots": 2,
     "NumTotalMysqldSlots": 10,
     "NumTotalApiSlots": 16,
+    /*
+        Sometimes, new desired states cannot be reached without allowing
+        temporary VMs. E.g.: upgrading the RonDB version with a replication
+        factor of 1.
+    */
     "AllowRequestingTemporaryVms": true,
+    /*
+        The flask server will claim that the new containers it spawns
+        are in the given Region / Availability Zone. The ndb-agent
+        will distribute each service evenly across availability zone.
+        E.g.: one replica per AZ
+    */
     "Region": "europe-1",
     "AvailabilityZones": [
         "soedermalm"
     ],
     /*
-        Supported VM types: mini, medium, large, xlarge, xxlarge
+        The flask server supports the VmType:
+            mini, medium, large, xlarge, xxlarge
         These have differences in container memory limits.
 
         Only increase the VmType; reducing beyond the defaults may crash
@@ -92,13 +121,22 @@
     "VmTypeApis": "medium",
     "VmTypeMysqlds": "large",
     "VmTypeNdbds": "xlarge",
-    "NumManagedMgmdVms": 0,
+
+    // Use this to scale MySQLd servers & Api containers
     "NumManagedMysqldVms": 1,
     "NumManagedApiVms": 1,
+    
+    /*
+        The flask server does not have variable storage size containers implemented.
+        However, when changing these fields for a live cluster, the containers will
+        be replaced.
+    */
     "StorageGiBPerMgmdVm": 4,
     "StorageGiBPerNdbdVm": 30,
     "StorageGiBPerMysqldVm": 15,
     "StorageGiBPerApiVm": 10,
+
+    // Immutable fields:
     "DefaultMgmdPort": 1186,
     "DefaultNdbdPort": 11860,
     "DefaultMysqldPort": 3306
