@@ -61,12 +61,18 @@
 
     /*
         RonDB-native configuration parameter to avoid data nodes from allocating all
-        the memory in their containers. Some memory is also needed for the ndb-agent.
+        the memory in their containers. Some memory will also be needed for the ndb-agent.
     */
     "TotalMemoryConfig": "2400M",
+
+    /*
+        These are the parameters that determine how many data nodes we will have running.
+        Number of running data node container = ActiveReplicationFactor * NumNodeGroups
+    */
     "ActiveReplicationFactor": 1,  // Can be changed to add replicas to every node group
     "MaxReplicationFactor": 3, // Immutable
     "NumNodeGroups": 1, // Immutable
+
     /*
         Make sure that these nodes exist as containers before specifying them in the desired state.
         The nodes specified here are listed in the docker-compose file.
