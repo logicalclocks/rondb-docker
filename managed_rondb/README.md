@@ -87,3 +87,4 @@ The ndb-agent has the following test suites:
 
 - The ndb-agent currently does not yet support leader election, nor is the leader's state replicated. This means that if the bootstrap_mgm container dies, the cluster cannot be managed anymore.
 - The ndb-agent has not been tested with error injections. In theory, if a VM/container goes down, the reconciliation loop should take care of replacing it with a new VM/container. However, this is still subject to testing.
+- It is not yet recommended to run any outside applications against managed RonDB, since it is still a closed eco-system without any exposed ports. This is mostly due to the fact that the containers are dynamic and so work still has to be done for load balancing / service detection.
