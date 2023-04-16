@@ -6,7 +6,7 @@ services:
     container_name: flask-server
     command: ["--no-active-test-worker"]
     environment:
-      IMAGE_TO_SPAWN: rondb-managed:latest
+      IMAGE_TO_SPAWN: hopsworks/rondb-managed:latest
       CLOUD_BASE_URL: "http://flask-server:8000"
     ports:
       # Host:Docker
