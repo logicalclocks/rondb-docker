@@ -9,7 +9,6 @@ if [ $# -gt 0 ]; then
     fi
 fi
 
-ID=1
-PID_FILE=/srv/hops/mysql-cluster/log/ndb_${ID}.pid
+PID_FILE=/srv/hops/mysql-cluster/log/ndbmtd.pid
 /srv/hops/mysql-cluster/ndb/scripts/util/kill-process.sh ndbmtd $PID_FILE 1 $FORCE
 exit $?
