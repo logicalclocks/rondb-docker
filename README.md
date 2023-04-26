@@ -4,7 +4,7 @@ This repository creates the possibility of:
 
 - running local RonDB clusters with docker-compose
 - benchmarking RonDB with Sysbench and DBT2 on localhost
-- demoing the usage of managed RonDB
+- demoing the usage of [managed RonDB](/managed_rondb)
 - building multi-platform RonDB images
 - developing applications towards RonDB
 
@@ -85,7 +85,8 @@ Commands to run:
   --node-groups 1 \
   --replication-factor 2 \
   --num-mysql-nodes 1 \
-  --num-api-nodes 1
+  --num-rest-api-nodes 1 \
+  --num-benchmarking-nodes 1
 
 # Build and run image **for local platform** in docker-compose using local RonDB tarball (download it first!)
 # Beware that the local platform is linux/arm64 in this case
