@@ -662,7 +662,6 @@ if [ "$NUM_REST_API_NODES" -gt 0 ]; then
     for CONTAINER_NUM in $(seq $NUM_REST_API_NODES); do
         SERVICE_NAME="rest_$CONTAINER_NUM"
         template="$(service-template)"
-        # ldconfig --verbose
         command=$(printf "$COMMAND_TEMPLATE" "[\"rdrs\", \"-config=$DATA_DIR/rest_api.json\"]")
 
         template+="$command"
@@ -690,9 +689,18 @@ if [ "$NUM_REST_API_NODES" -gt 0 ]; then
 
         template+="$ENV_FIELD"
 
+        # There are cases where the MySQLd is up, but the cluster is not.
+        # Also, we may not have MySQLds configured at all.
         template+="$DEPENDS_ON_FIELD"
-        depends_on=$(printf "$DEPENDS_ON_TEMPLATE" "mysqld_1")
-        template+="$depends_on"
+        for NDBD_IP in "${NDBD_IPS[@]}"; do
+            depends_on=$(printf "$DEPENDS_ON_TEMPLATE" "$NDBD_IP")
+            template+="$depends_on"
+        done
+
+        if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
+            depends_on=$(printf "$DEPENDS_ON_TEMPLATE" "mysqld_1")
+            template+="$depends_on"
+        fi
 
         BASE_DOCKER_COMPOSE_FILE+="$template"
 
@@ -873,7 +881,7 @@ fi
 
 if [ "$NUM_BENCH_NODES" -gt 0 ]; then
     echo "Writing configuration file for the REST API server"
-    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "" "" "$MGMD_IPS" "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD")
+    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$MGMD_IPS")
     echo "$REST_API_CONFIG" >$REST_API_JSON_FILEPATH
 fi
 

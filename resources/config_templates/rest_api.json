@@ -1,35 +1,33 @@
 {
-    "RestServer": {
-        "RESTServerIP": "%s",
-        "RESTServerPort": 4406,
-        "GRPCServerIP": "%s",
-        "GRPCServerPort": 5406,
-        "APIVersion": "0.1.0",
-        "BufferSize": 327680,
-        "PreAllocatedBuffers": 1024,
-        "GOMAXPROCS": -1
+    "Internal": {
+        "APIVersion": "0.1.0"
     },
-    "RonDBConfig": {
-        "IP": "%s",
-        "Port": 1186
+    "REST": {
+        "ServerIP": "",
+        "ServerPort": 4406
     },
-    "MySQLServer": {
-        "IP": "%s",
-        "Port": 3306,
-        "User": "%s",
-        "Password": "%s"
+    "GRPC": {
+        "ServerIP": "",
+        "ServerPort": 5406
+    },
+    "RonDB": {
+        "Mgmds": [
+            {
+                "IP": "%s",
+                "Port": 1186
+            }
+        ]
     },
     "Security": {
-        "EnableTLS": false,
-        "RequireAndVerifyClientCert": false,
-        "CertificateFile": "",
-        "PrivateKeyFile": "",
-        "UseHopsWorksAPIKeys": false
+        "TLS": {
+            "EnableTLS": false,
+            "RequireAndVerifyClientCert": false
+        },
+        "APIKey": {
+            "UseHopsworksAPIKeys": false
+        }
     },
     "Log": {
-        "Level": "trace",
-        "MaxSizeMB": 100,
-        "MaxBackups": 10,
-        "MaxAge": 30
+        "Level": "info"
     }
 }
