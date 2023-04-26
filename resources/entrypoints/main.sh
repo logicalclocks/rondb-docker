@@ -55,11 +55,14 @@ else
 	# this is an argument to the script itself and not the set
 	# command.
 
-	if [ "$1" != "rdrs" ]; then
+    # The default for mgmds & ndbmtds is to run as daemon processes
+    if [ "$1" != "rdrs" ]; then
 		set -- "$@" --nodaemon
 	fi
-	
-	if [ "$1" == "ndb_mgmd" ]; then
+
+	if [ "$1" == "rdrs" ]; then
+        echo "[entrypoints/main.sh] Starting REST API server: $@"
+	elif [ "$1" == "ndb_mgmd" ]; then
 		echo "[entrypoints/main.sh] Starting ndb_mgmd"
 		set -- "$@" -f "$RONDB_DATA_DIR/config.ini" --configdir="$RONDB_DATA_DIR/log"
 	elif [ "$1" == "ndbmtd" ]; then
