@@ -57,6 +57,10 @@ else
 
     # The default for mgmds & ndbmtds is to run as daemon processes
     if [ "$1" != "rdrs" ]; then
+        
+        # TODO: REMOVE THIS AND FIGURE OUT HOW TO SET LD_LIBRARY_PATH FROM ROOT
+        export LD_LIBRARY_PATH=/srv/hops/mysql/lib:/usr/local/ssl/lib
+
 		set -- "$@" --nodaemon
 	fi
 
