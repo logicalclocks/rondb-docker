@@ -165,7 +165,8 @@ EXEC_CMD="$EXEC_CMD --num-mgm-nodes 1"
 EXEC_CMD="$EXEC_CMD --node-groups 1"
 EXEC_CMD="$EXEC_CMD --replication-factor $REPLICATION_FACTOR"
 EXEC_CMD="$EXEC_CMD --num-mysql-nodes $NUM_MYSQL_SERVERS"
-EXEC_CMD="$EXEC_CMD --num-api-nodes 1"
+EXEC_CMD="$EXEC_CMD --num-rest-api-nodes 1"
+EXEC_CMD="$EXEC_CMD --num-benchmarking-nodes 1"
 
 if [ "$BENCHMARK" != "" ]; then
     EXEC_CMD="$EXEC_CMD --run-benchmark $BENCHMARK"
