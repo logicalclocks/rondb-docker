@@ -24,8 +24,3 @@ usermod -a -G mysql mysql
 
 # Execute main.sh as mysql user with preserved environment and arguments.
 sudo -E -u mysql "$(pwd)/docker/rondb_standalone/entrypoints/main.sh" "$@"
-
-# sudo -E -u mysql "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH" "$(pwd)/docker/rondb_standalone/entrypoints/main.sh" "$@"
-
-# sudo -E -u mysql bash --rcfile /home/mysql/.bashrc -c "$(pwd)/docker/rondb_standalone/entrypoints/main.sh $@"
-# bash --rcfile /home/mysql/.bashrc -c "./basic.sh john"
