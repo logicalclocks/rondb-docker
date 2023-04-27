@@ -156,9 +156,9 @@ services:
       - MYSQL_USER=mysql
       - MYSQL_PASSWORD=Abc123?e
 
-    api_1:
+    bench_1:
       image: hopsworks/rondb-standalone:latest
-      container_name: api_1
+      container_name: bench_1
       command: >
           bash -c "sleep 5 && bench_run.sh --verbose --default-directory /home/mysql/benchmarks/sysbench_multi "
       depends_on:

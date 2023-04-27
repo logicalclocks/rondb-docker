@@ -718,7 +718,7 @@ fi
 
 if [ $NUM_BENCH_NODES -gt 0 ]; then
     for CONTAINER_NUM in $(seq $NUM_BENCH_NODES); do
-        SERVICE_NAME="api_$CONTAINER_NUM"
+        SERVICE_NAME="bench_$CONTAINER_NUM"
         template="$(service-template)"
 
         if [ -z "$RUN_BENCHMARK" ]; then

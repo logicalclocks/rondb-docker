@@ -49,7 +49,7 @@ jobs:
       - run: docker logs mgmd_1
       - run: docker logs ndbd_1
       - run: docker logs mysqld_1
-      - run: docker logs api_1
+      - run: docker logs bench_1
 
       # At this point we only know that one container has exited. We want to
       # check whether the API container has exited with exit code 0. We need
@@ -57,12 +57,12 @@ jobs:
       # for running containers.
       - name: Check API Exit Code
         run: |
-          if [ "$(docker inspect api_1 --format='{{.State.Status}}')" != "exited" ]
+          if [ "$(docker inspect bench_1 --format='{{.State.Status}}')" != "exited" ]
           then
-            echo "Some container other than api_1 exited unexpectedly."
+            echo "Some container other than bench_1 exited unexpectedly."
             docker ps -a
             exit 1
-          elif [ "$(docker inspect api_1 --format='{{.State.ExitCode}}')" != "0" ]
+          elif [ "$(docker inspect bench_1 --format='{{.State.ExitCode}}')" != "0" ]
           then
             echo "Benchmarking failed."
             exit 1
