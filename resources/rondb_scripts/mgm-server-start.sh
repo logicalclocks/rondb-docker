@@ -29,7 +29,13 @@ if [ -n "$INITIAL_START" ]; then
     INITIAL_START_ARG="--initial"
 fi
 
-mgmd_command="/srv/hops/mysql/bin/ndb_mgmd --ndb-nodeid=$NDB_MGMD_NODE_ID -f /srv/hops/mysql-cluster/config.ini  --configdir=/srv/hops/mysql-cluster/mgmd --reload $INITIAL_START_ARG"
+# TODO: Add this to the original cloud setup
+SERVICE_ARG=
+if [ -n "$SERVICE_NAME" ]; then
+    SERVICE_ARG="--service $SERVICE_NAME"
+fi
+
+mgmd_command="/srv/hops/mysql/bin/ndb_mgmd --ndb-nodeid=$NDB_MGMD_NODE_ID -f /srv/hops/mysql-cluster/config.ini  --configdir=/srv/hops/mysql-cluster/mgmd --reload $INITIAL_START_ARG $SERVICE_ARG"
 
 # This is not in the original cloud setup;
 # It is used for alternative process managers such as supervsisord

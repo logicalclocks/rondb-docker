@@ -18,6 +18,12 @@ if [ -n "$INITIAL_START" ]; then
     sed -i 's/^INITIAL_START=.*$/INITIAL_START=/g' /srv/hops/mysql-cluster/ndb/scripts/ndbd_env_variables
 fi
 
+# TODO: Add this to the original cloud setup
+SERVICE_ARG=
+if [ -n "$SERVICE_NAME" ]; then
+    SERVICE_ARG="--service $SERVICE_NAME"
+fi
+
 MGM_CONN=$MGM_CONN_STRING
 
 # comma separated list of node-ids of nodes not to wait for when starting this ndbmtd
@@ -48,7 +54,7 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-ndbd_command="/srv/hops/mysql/bin/ndbmtd -c "$MGM_CONN" --ndb-nodeid=$NDB_NDBD_NODE_ID  --connect-retries=-1 --connect-delay=10 $INITIAL_START_ARG $NOWAIT_NODES_LIST"
+ndbd_command="/srv/hops/mysql/bin/ndbmtd -c "$MGM_CONN" --ndb-nodeid=$NDB_NDBD_NODE_ID  --connect-retries=-1 --connect-delay=10 $INITIAL_START_ARG $NOWAIT_NODES_LIST $SERVICE_ARG"
 
 # This is not in the original cloud setup;
 # It is used for alternative process managers such as supervsisord
