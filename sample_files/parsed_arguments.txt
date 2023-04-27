@@ -1,17 +1,18 @@
-RonDB-Docker version: 0.2-SNAPSHOT
+RonDB-Docker version: 0.3-SNAPSHOT
 
 #################
 Parsed arguments:
 #################
 
-RonDB version                 = latest
-RonDB tarball path            = 
+RonDB version                 = 21.04.12
+RonDB tarball path            = ./rondb-21.04.12-linux-glibc2.35-arm64_v8.tar.gz
 RonDB tarball url             = 
 Number of management nodes    = 1
 Node groups                   = 1
 Replication factor            = 2
-Number of mysql nodes         = 2
-Number of api nodes           = 1
+Number of MySQLd nodes        = 2
+Number of REST API nodes      = 1
+Number of benchmarking nodes  = 1
 Run benchmark                 = sysbench_multi
 Volume type docker/local      = local
 Save sample files             = 1
