@@ -221,9 +221,6 @@ if [ -n "$RONDB_TARBALL_PATH" ] && [ -n "$RONDB_TARBALL_URL" ]; then
     echo "Cannot specify both a RonDB tarball path and url" >&2
     print_usage
     exit 1
-elif [ "$NUM_REST_API_NODES" -gt 0 ] && [ "$NUM_MYSQL_NODES" -lt 1 ]; then
-    echo "REST API servers require a MySQLd instance"
-    exit 1
 fi
 
 if [ "$NUM_MGM_NODES" -lt 1 ]; then
