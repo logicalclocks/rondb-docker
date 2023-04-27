@@ -264,7 +264,7 @@ if [ -n "$RUN_BENCHMARK" ]; then
     # One benchmarking container can however also run multiple Sysbench instances against multiple MySQLd containers
     if [ "$RUN_BENCHMARK" == "sysbench_multi" ]; then
         if [ "$NUM_MYSQL_NODES" -lt "$NUM_BENCH_NODES" ]; then
-            echo "For sysbench_multi, there should be at least as many MySQLd as api containers" >&2
+            echo "For sysbench_multi, there should be at least as many MySQLd as benchmarking nodes" >&2
             exit 1
         fi
     fi
@@ -883,7 +883,7 @@ if [ "$NUM_MYSQL_NODES" -gt 0 ]; then
     fi
 fi
 
-if [ "$NUM_BENCH_NODES" -gt 0 ]; then
+if [ "$NUM_REST_API_NODES" -gt 0 ]; then
     echo "Writing configuration file for the REST API server"
     # Could also add more mgmds here
     REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$SINGLE_MGMD_IP")
