@@ -49,6 +49,7 @@ jobs:
       - run: docker logs mgmd_1
       - run: docker logs ndbd_1
       - run: docker logs mysqld_1
+      - run: docker logs rest_1
       - run: docker logs bench_1
 
       # At this point we only know that one container has exited. We want to
