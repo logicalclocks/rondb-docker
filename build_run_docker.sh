@@ -683,10 +683,14 @@ if [ "$NUM_REST_API_NODES" -gt 0 ]; then
 
         # Open ports for REST API server
         template+="$PORTS_FIELD"
-        ports=$(printf "$PORTS_TEMPLATE" "4406" "4406")
+
+        ports=$(printf "$PORTS_TEMPLATE" "$EXPOSE_RDRS_REST_PORTS_STARTING_AT" "4406")
         template+="$ports"
-        ports=$(printf "$PORTS_TEMPLATE" "5406" "5406")
+        ports=$(printf "$PORTS_TEMPLATE" "$EXPOSE_RDRS_gRPC_PORTS_STARTING_AT" "5406")
         template+="$ports"
+
+        EXPOSE_RDRS_REST_PORTS_STARTING_AT=$((EXPOSE_RDRS_REST_PORTS_STARTING_AT + 1))
+        EXPOSE_RDRS_gRPC_PORTS_STARTING_AT=$((EXPOSE_RDRS_gRPC_PORTS_STARTING_AT + 1))
 
         template+="$ENV_FIELD"
 
