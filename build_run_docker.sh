@@ -461,6 +461,7 @@ CONFIG_INI=$(printf "$CONFIG_INI_TEMPLATE" \
     "$CONFIG_INI_MaxNoOfConcurrentOperations"
 )
 
+SINGLE_MGMD_IP=''
 MGM_CONNECTION_STRING=''
 MGMD_IPS=''
 NDBD_IPS=()
@@ -544,6 +545,9 @@ for CONTAINER_NUM in $(seq "$NUM_MGM_NODES"); do
 
     MGM_CONNECTION_STRING+="$SERVICE_NAME:1186,"
     MGMD_IPS+="$SERVICE_NAME,"
+    if [ "$CONTAINER_NUM" -eq 1 ]; then
+        SINGLE_MGMD_IP+="$SERVICE_NAME"
+    fi
 done
 # Remove last comma from MGM_CONNECTION_STRING
 MGM_CONNECTION_STRING=${MGM_CONNECTION_STRING%?}
@@ -881,7 +885,8 @@ fi
 
 if [ "$NUM_BENCH_NODES" -gt 0 ]; then
     echo "Writing configuration file for the REST API server"
-    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$MGMD_IPS")
+    # Could also add more mgmds here
+    REST_API_CONFIG=$(printf "$REST_API_CONFIG_TEMPLATE" "$SINGLE_MGMD_IP")
     echo "$REST_API_CONFIG" >$REST_API_JSON_FILEPATH
 fi
 
