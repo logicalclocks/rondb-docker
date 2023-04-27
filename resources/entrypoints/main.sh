@@ -58,7 +58,8 @@ else
     # The default for mgmds & ndbmtds is to run as daemon processes
     if [ "$1" != "rdrs" ]; then
         
-        # TODO: REMOVE THIS AND FIGURE OUT HOW TO SET LD_LIBRARY_PATH FROM ROOT
+        # TODO: This is already set in the Dockerfile; Remove this here and
+        #   figure out how to pass this on to the mysql user.
         export LD_LIBRARY_PATH=/srv/hops/mysql/lib:/usr/local/ssl/lib
 
 		set -- "$@" --nodaemon
