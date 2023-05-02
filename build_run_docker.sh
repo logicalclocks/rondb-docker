@@ -476,21 +476,9 @@ VOLUMES=()
 add_volume_to_template() {
     local VOLUME_NAME="$1"
     local TARGET_DIR_PATH="$2"
-    local IS_NDBD_DATA_DIR="$3"
     if [ "$VOLUME_TYPE" == local ]; then
         local VOLUME_DIR="$LOCAL_VOLUMES_DIR/$VOLUME_NAME"
         mkdir -p "$VOLUME_DIR"
-        if [ "$IS_NDBD_DATA_DIR" == yes ]; then
-            # The ndbd data dir has subfolders for each node ID, that are
-            # created in the Dockerfile:
-            # `RUN for i in $(seq 64); do mkdir -p $NDBD_DATA_DIR/$i; done`
-            # When we create and mount a local directory, it is created empty so
-            # we need to create these subdirectories again.
-            # TODO Why isn't this a problem when using docker volumes?
-            for i in $(seq 64); do
-                mkdir -p "$VOLUME_DIR/$i"
-            done
-        fi
         template+="$(printf "$VOLUME_TEMPLATE" bind "$VOLUME_DIR" "$TARGET_DIR_PATH")"
     else
         VOLUMES+=("$VOLUME_NAME")
@@ -529,8 +517,8 @@ for CONTAINER_NUM in $(seq "$NUM_MGM_NODES"); do
 
     template+="$VOLUMES_FIELD"
     add_file_to_template "$CONFIG_INI_FILEPATH" "$DATA_DIR/config.ini"
-    add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/mgmd" no
-    add_volume_to_template "logDir_$SERVICE_NAME" "$DATA_DIR/log" no
+    add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/mgmd"
+    add_volume_to_template "logDir_$SERVICE_NAME" "$DATA_DIR/log"
 
     template+="$ENV_FIELD"
 
@@ -576,16 +564,16 @@ for CONTAINER_NUM in $(seq $NUM_DATA_NODES); do
             memory: $NDBD_MEMORY_RESERVATION"
 
     template+="$VOLUMES_FIELD"
-    add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/ndb_data" yes
-    add_volume_to_template "logDir_$SERVICE_NAME" "$DATA_DIR/log" no
+    add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/ndb_data"
+    add_volume_to_template "logDir_$SERVICE_NAME" "$DATA_DIR/log"
 
     template+="$ENV_FIELD"
 
     BASE_DOCKER_COMPOSE_FILE+="$template"
 
     NODE_GROUP=$((CONTAINER_NUM % NODE_GROUPS))
-    # NodeId, NodeGroup, NodeActive, HostName, ServerPort, FileSystemPath (NodeId)
-    SLOT=$(printf "$CONFIG_INI_NDBD_TEMPLATE" "$NODE_ID" "$NODE_GROUP" "1" "$SERVICE_NAME" "11860" "$NODE_ID")
+    # NodeId, NodeGroup, NodeActive, HostName, ServerPort
+    SLOT=$(printf "$CONFIG_INI_NDBD_TEMPLATE" "$NODE_ID" "$NODE_GROUP" "1" "$SERVICE_NAME" "11860")
     CONFIG_INI=$(printf "%s\n\n%s" "$CONFIG_INI" "$SLOT")
 done
 
@@ -618,8 +606,8 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
 
         template+="$VOLUMES_FIELD"
         add_file_to_template "$MY_CNF_FILEPATH" "$DATA_DIR/my.cnf"
-        add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/mysql" no
-        add_volume_to_template "mysqlFilesDir_$SERVICE_NAME" "$DATA_DIR/mysql-files" no
+        add_volume_to_template "dataDir_$SERVICE_NAME" "$DATA_DIR/mysql"
+        add_volume_to_template "mysqlFilesDir_$SERVICE_NAME" "$DATA_DIR/mysql-files"
 
         template+="$PORTS_FIELD"
         ports=$(printf "$PORTS_TEMPLATE" "$EXPOSE_MYSQLD_PORTS_STARTING_AT" "3306")
@@ -754,11 +742,11 @@ if [ $NUM_BENCH_NODES -gt 0 ]; then
 
         template+="$VOLUMES_FIELD"
         if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
-            add_volume_to_template "sysbench_single" "$BENCH_DIR/sysbench_single" no
-            add_volume_to_template "dbt2_single" "$BENCH_DIR/dbt2_single" no
+            add_volume_to_template "sysbench_single" "$BENCH_DIR/sysbench_single"
+            add_volume_to_template "dbt2_single" "$BENCH_DIR/dbt2_single"
             if [ "$NUM_MYSQLD_NODES" -gt 1 ]; then
-                add_volume_to_template "sysbench_multi" "$BENCH_DIR/sysbench_multi" no
-                add_volume_to_template "dbt2_multi" "$BENCH_DIR/dbt2_multi" no
+                add_volume_to_template "sysbench_multi" "$BENCH_DIR/sysbench_multi"
+                add_volume_to_template "dbt2_multi" "$BENCH_DIR/dbt2_multi"
             fi
         fi
 
