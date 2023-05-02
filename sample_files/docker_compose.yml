@@ -4,7 +4,7 @@ version: '3.8'
 services:
 
     mgmd_1:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: mgmd_1
       command: ["ndb_mgmd", "--ndb-nodeid=65", "--initial"]
       deploy:
@@ -28,7 +28,7 @@ services:
       - HOST_GROUP_ID=20
 
     ndbd_1:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: ndbd_1
       command: ["ndbmtd", "--ndb-nodeid=1", "--initial", "--ndb-connectstring=mgmd_1:1186"]
       healthcheck:
@@ -55,7 +55,7 @@ services:
       - HOST_GROUP_ID=20
 
     ndbd_2:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: ndbd_2
       command: ["ndbmtd", "--ndb-nodeid=2", "--initial", "--ndb-connectstring=mgmd_1:1186"]
       healthcheck:
@@ -82,7 +82,7 @@ services:
       - HOST_GROUP_ID=20
 
     mysqld_1:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: mysqld_1
       command: ["mysqld"]
       cap_add:
@@ -120,7 +120,7 @@ services:
       - MYSQL_SETUP_APP=1
 
     mysqld_2:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: mysqld_2
       command: ["mysqld"]
       cap_add:
@@ -157,7 +157,7 @@ services:
       - MYSQL_PASSWORD=Abc123?e
 
     rest_1:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: rest_1
       command: ["rdrs", "-config=/srv/hops/mysql-cluster/rest_api.json"]
       deploy:
@@ -185,7 +185,7 @@ services:
           condition: service_healthy
 
     bench_1:
-      image: rondb-standalone:21.04.12
+      image: rondb-standalone:21.04.13
       container_name: bench_1
       command: >
           bash -c "sleep 5 && bench_run.sh --verbose --default-directory /home/mysql/benchmarks/sysbench_multi "

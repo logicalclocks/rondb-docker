@@ -91,8 +91,8 @@ Commands to run:
 # Build and run image **for local platform** in docker-compose using local RonDB tarball (download it first!)
 # Beware that the local platform is linux/arm64 in this case
 ./build_run_docker.sh \
-  --rondb-tarball-path ./rondb-21.04.12-linux-glibc2.35-arm64_v8.tar.gz \
-  --rondb-version 21.04.12 \
+  --rondb-tarball-path ./rondb-21.04.13-linux-glibc2.35-arm64_v8.tar.gz \
+  --rondb-version 21.04.13 \
   --num-mgm-nodes 1 \
   --node-groups 1 \
   --replication-factor 2 \
@@ -101,13 +101,13 @@ Commands to run:
   --num-benchmarking-nodes 1
 
 # Build cross-platform image (linux/arm64 here)
-docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.12 \
-  --build-arg RONDB_VERSION=21.04.12 \
+docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.13 \
+  --build-arg RONDB_VERSION=21.04.13 \
   --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \  # alternatively "local"
-  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.12-linux-glibc2.35-arm64_v8.tar.gz # alternatively a local file path
+  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.13-linux-glibc2.35-arm64_v8.tar.gz # alternatively a local file path
 
 # Explore image
-docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.12
+docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.13
 ```
 
 Exemplatory commands to run with running docker-compose cluster:
