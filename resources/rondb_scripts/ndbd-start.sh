@@ -21,7 +21,7 @@ fi
 # TODO: Add this to the original cloud setup
 SERVICE_ARG=
 if [ -n "$SERVICE_NAME" ]; then
-    SERVICE_ARG="--service $SERVICE_NAME"
+    SERVICE_ARG="--service-name $SERVICE_NAME"
 fi
 
 MGM_CONN=$MGM_CONN_STRING
