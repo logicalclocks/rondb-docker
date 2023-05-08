@@ -59,6 +59,9 @@ Usage: $0
     [-lv    --volumes-in-local-dir                                  
                 Replace volumes with local directories              ]
     [-d     --detached                                              ]
+    [-su    --suffix
+                suffix to add the the project name.
+                Add a suffix if you want to run seversl cluster in parallel]
 EOF
 }
 
@@ -102,6 +105,11 @@ while [[ $# -gt 0 ]]; do
     -d | --detached)
         DETACHED="-d"
         shift # past argument
+        ;;
+    -su | --suffix)
+	USER_SUFFIX="$2"
+        shift # past argument
+        shift # past value
         ;;
     *)                     # unknown option
         POSITIONAL+=("$1") # save it in an array for later
@@ -170,6 +178,10 @@ EXEC_CMD="$EXEC_CMD --num-benchmarking-nodes 1"
 
 if [ "$BENCHMARK" != "" ]; then
     EXEC_CMD="$EXEC_CMD --run-benchmark $BENCHMARK"
+fi
+
+if [ "$USER_SUFFIX" != "" ]; then
+    EXEC_CMD="$EXEC_CMD --suffix $USER_SUFFIX"
 fi
 
 echo "Executing command: $EXEC_CMD"
