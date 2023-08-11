@@ -58,7 +58,7 @@ Whenever the ndb-agent realises that its internal state diverges from the desire
 
 Both at the `ERROR_STATE` and the `AT_DESIRED_STATE`, the ndb-agent will continue observing its state. If it is `AT_DESIRED_STATE` and it notices that it has diverged from its latest accepted desired state, it will change its `RECONCILIATION STATE` to `WORKING_TOWARDS_DESIRED_STATE` and run the reconciliation loop again.
 
-All logic of the ndb-agent's state machine is run on the ndb-agent leader. This decides which actions to run to reach a desired state. Most importantly, it runs gRPC functions on the follower ndb-agents. For example, it will execute the gRPC function `StartDataNode` on the ndb-agent which is in the container/VM where the leader decides that a RonDB data node should be run. These gRPC functions are the only side effects the leader has and therefore state transformation tests can be tested fairly easily by replacing these with dummies. In Go, this often simply means returning `err=nil`.
+All logic of the ndb-agent's state machine is run on the ndb-agent leader. This decides which actions to run to reach a desired state. Most importantly, it runs gRPC functions on the follower ndb-agents. For example, it will execute the gRPC function `StartDataNode` on the ndb-agent which is in the container/VM where the leader decides that a RonDB data node should be run. The leader is elected via the Raft consensus algorithm and we thereby also use Raft to persist the internal state of the ndb-agent. The Raft cluster is bootstrapped with the `bootstrap_agent` container, which then contains the first leader. This container can be removed (manually) once the first desired state has been reached and another container will take over leadership. There is no RonDB service running on the `bootstrap_agent`.
 
 ## How the Ndb-Agent is tested
 
@@ -73,6 +73,5 @@ The ndb-agent has the following test suites:
 
 ## Ongoing Work
 
-- The ndb-agent currently does not yet support leader election, nor is the leader's state replicated. This means that if the bootstrap_mgm container dies, the cluster cannot be managed anymore.
-- The ndb-agent has not been tested with error injections. In theory, if a VM/container goes down, the reconciliation loop should take care of replacing it with a new VM/container. However, this is still subject to testing.
+- The ndb-agent has not been tested with error injections. Killing a container and making sure the reconciliation loop takes care of replacing it with a new VM/container has only been proven in manual tests so far.
 - It is not yet recommended to run any outside applications against managed RonDB, since it is still a closed eco-system without any exposed ports. This is mostly due to the fact that the containers are dynamic and so work still has to be done for load balancing / service detection.
