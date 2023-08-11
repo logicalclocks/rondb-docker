@@ -23,17 +23,13 @@ services:
     expose:
       - 80
 
-  bootstrap_mgm:
+  # This container can be killed once the cluster is running
+  bootstrap_agent:
     image: hopsworks/rondb-managed:latest
-    container_name: bootstrap_mgm
+    container_name: bootstrap_agent
     environment:
-      CONTAINER_NAME: bootstrap_mgm
-      IS_LEADER: "true"
+      IS_BOOTSTRAP_HOST: "true"
       CLOUD_BASE_URL: "http://flask-server:8000"
-    deploy:
-      resources:
-        limits:
-          memory: 200M
     volumes:
       - dummy_sink:/home/sink
 
