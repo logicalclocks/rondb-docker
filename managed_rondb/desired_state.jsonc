@@ -71,24 +71,6 @@
     "MaxReplicationFactor": 3, // Immutable
     "NumNodeGroups": 1, // Immutable
     /*
-        Make sure that these nodes exist as containers before specifying them in the desired state.
-        The nodes specified here are listed in the docker-compose file.
-
-        However, in case the "Ip" field is empty, no container is required and they will 
-        correspond to slots without Hostnames in the config.ini. This only works for mysqld
-        and ndb_api slots though.
-
-        Possible RonDBTypes: ndb_mgm, ndb_ndbd, mysqld, ndb_api
-    */
-    "ExternallyManagedNodes": [
-        // This bootstrap container can currently not be removed
-        {
-            "RonDBType": "ndb_mgm",
-            "Ip": "bootstrap_mgm",
-            "Port": 1186
-        }
-    ],
-    /*
         Immutable fields. They are RonDB-native parameters that create slots
         in the config.ini. We set a number to allow scaling up/down when the
         cluster is running. If they are not used, they are deactivated.
