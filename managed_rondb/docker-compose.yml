@@ -12,8 +12,12 @@ services:
       # Host:Docker
       - 8000:8000
     volumes:
-      - ./desired_state.jsonc:/home/flask_server/desired_state.jsonc
-      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./desired_state.jsonc
+        target: /home/flask_server/desired_state.jsonc
+      - type: bind
+        source:  /var/run/docker.sock
+        target:  /var/run/docker.sock
 
   # Host ndb-agent & RonDB tarballs for up/downgrades
   nginx:
@@ -31,7 +35,9 @@ services:
       IS_BOOTSTRAP_HOST: "true"
       CLOUD_BASE_URL: "http://flask-server:8000"
     volumes:
-      - dummy_sink:/home/sink
+     - type: volume
+       source: dummy_sink
+       target: /home/sink
 
 volumes:
   dummy_sink:

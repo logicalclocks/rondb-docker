@@ -30,6 +30,8 @@ docker logs flask-server -f
 
 Now you can follow how the cluster is being created. You can change the [desired_state.jsonc](desired_state.jsonc) file both before running a cluster or whilst it is running. The leader ndb-agent will accept new desired states when its `RECONCILIATION STATE` is `AT_DESIRED_STATE` or `ERROR_STATE`. You can however change the json file whenever you want to.
 
+**_Warning_**: Recommended editors to change the [desired_state.jsonc](desired_state.jsonc) file: Nano, VS Code. **DO NOT** use Vim or Text Editor (Mac). These will [change the inode of the file when saving](https://unix.stackexchange.com/questions/36467/why-inode-value-changes-when-we-edit-in-vi-editor), breaking the mount.
+
 ## Images in Docker Compose File
 
 The Docker Compose file consists of the following images:
