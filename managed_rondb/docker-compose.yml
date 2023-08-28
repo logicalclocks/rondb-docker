@@ -12,9 +12,12 @@ services:
       # Host:Docker
       - 8000:8000
     volumes:
+      # This is to mount the desired_state.jsonc file. We're binding the
+      # entire directory, since some editors (e.g. Vim) can overwrite the
+      # file's inode when saving the file on host and thereby break the mount.
       - type: bind
-        source: ./desired_state.jsonc
-        target: /home/flask_server/desired_state.jsonc
+        source: .
+        target: /home/desired_state
       - type: bind
         source:  /var/run/docker.sock
         target:  /var/run/docker.sock
