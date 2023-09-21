@@ -6,7 +6,7 @@ services:
     container_name: flask-server
     command: ["--no-active-test-worker"]
     environment:
-      IMAGE_TO_SPAWN: hopsworks/rondb-managed:latest
+      IMAGE_TO_SPAWN: hopsworks/rondb-managed:21.04.15-1.0
       CLOUD_BASE_URL: "http://flask-server:8000"
     ports:
       # Host:Docker
@@ -32,7 +32,7 @@ services:
 
   # This container can be killed once the cluster is running
   bootstrap_agent:
-    image: hopsworks/rondb-managed:latest
+    image: hopsworks/rondb-managed:21.04.15-1.0
     container_name: bootstrap_agent
     environment:
       IS_BOOTSTRAP_HOST: "true"

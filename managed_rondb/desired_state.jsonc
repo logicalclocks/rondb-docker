@@ -122,10 +122,10 @@
         implemented to support shared network disks / volumes. Therefore, when
         changing these fields for a live cluster, the containers will be replaced.
     */
-    "StorageGiBPerMgmdVm": 4,
-    "StorageGiBPerNdbdVm": 30,
-    "StorageGiBPerMysqldVm": 15,
-    "StorageGiBPerApiVm": 10,
+    "BlockStorageGiBPerMgmdVm": 4,
+    "BlockStorageGiBPerNdbdVm": 30,
+    "BlockStorageGiBPerMysqldVm": 50,
+    "BlockStorageGiBPerApiVm": 10,
     /*
         These are immutable fields that will be fixed in RonDB's config.ini.
         Take these into account when adding ExternallyManagedNodes on a running
