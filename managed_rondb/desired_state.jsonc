@@ -26,7 +26,7 @@
     */
     "NdbAgentVersion": "0.999",
     "NdbAgentDownloadLink": "http://nginx/local/ndb-agent-0.999.tgz",
-    "SingleBackups": [
+    "OnDemandBackups": [
         /*
             This is an example of a backup that is saved on a Docker volume.
             As this is the first desired state, this backup will be run right
@@ -48,7 +48,7 @@
         set if RonDBRunning has never been set to true before. Therefore, a cluster
         can never restore its own backup.
 
-        Make sure that this backup is also referenced in SingleBackups.
+        Make sure that this backup is also referenced in OnDemandBackups.
 
         "RestoreFromBackup": {
             "Id": 123,
