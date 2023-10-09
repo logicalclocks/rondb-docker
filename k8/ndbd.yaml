@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ndbmtds
+spec:
+  replicas: 1
+  selector:
+    # Used by the Deployment to select and manage existing pods with the specified label
+    matchLabels:
+      app: ndbmtd
+  template:
+    metadata:
+      # Used to apply labels to all pods created by the Deployment
+      labels:
+        app: ndbmtd
+    spec:
+      # Hostname in config.ini. Cannot use service name.
+      hostname: ndbmtd-1
+      containers:
+      - name: ndbmtd
+        image: hopsworks/rondb-standalone:22.10.1
+        args:
+          - ndbmtd
+          - --ndb-nodeid=1
+          - --initial
+          - --ndb-connectstring=mgmd-1:1186
+        ports:
+          - containerPort: 11860
+        env:
+          - name: HOST_GROUP_ID
+            value: "0"
+        volumeMounts:
+        - name: rondb-ndbmtd-data
+          mountPath: /srv/hops/mysql-cluster/ndb_data
+        - name: rondb-ndbmtd-log
+          mountPath: /srv/hops/mysql-cluster/log
+      volumes:
+      - name: rondb-ndbmtd-data
+        persistentVolumeClaim:
+          claimName: rondb-ndbmtd-data-claim
+      - name: rondb-ndbmtd-log
+        persistentVolumeClaim:
+          claimName: rondb-ndbmtd-log-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndbmtds
+spec:
+  # Match the spec.template.metadata.labels of the Deployment
+  selector:
+    app: ndbmtd
+  ports:
+    - protocol: TCP
+      port: 11860
+      targetPort: 11860
+  type: ClusterIP  # Expose the service internally within the cluster
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rondb-ndbmtd-data-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rondb-ndbmtd-log-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
