@@ -33,16 +33,16 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
         volumeMounts:
-        - name: rondb-mgmd-config
+        - name: rondb-configs
           mountPath: /srv/hops/mysql-cluster
         - name: rondb-mgmd-data
           mountPath: /srv/hops/mysql-cluster/data
         - name: rondb-mgmd-log
           mountPath: /srv/hops/mysql-cluster/log
       volumes:
-      - name: rondb-mgmd-config
+      - name: rondb-configs
         configMap:
-          name: rondb-mgmd-config
+          name: rondb-configs
       - name: rondb-mgmd-data
         persistentVolumeClaim:
           claimName: rondb-mgmd-data-claim
