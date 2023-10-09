@@ -28,11 +28,19 @@ spec:
         env:
           - name: HOST_GROUP_ID
             value: "0"
+          # TODO: Parse ordinal number to apply for node-id
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
         volumeMounts:
         - name: rondb-ndbmtd-data
           mountPath: /srv/hops/mysql-cluster/ndb_data
         - name: rondb-ndbmtd-log
           mountPath: /srv/hops/mysql-cluster/log
+      # StatefulSets work with PVCs to create a dedicated persistent volume for
+      # each pod replica, ensuring that a pod always re-attaches to the same data
+      # even if it is rescheduled to a different node.
       volumes:
       - name: rondb-ndbmtd-data
         persistentVolumeClaim:

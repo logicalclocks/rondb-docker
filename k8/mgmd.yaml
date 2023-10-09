@@ -27,6 +27,11 @@ spec:
         env:
           - name: HOST_GROUP_ID
             value: "0"
+          # TODO: Parse ordinal number to apply for node-id
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
         volumeMounts:
         - name: rondb-mgmd-config
           mountPath: /srv/hops/mysql-cluster
