@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: mgmds
 spec:
+  serviceName: "mgmd"
   replicas: 1
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
@@ -14,8 +15,6 @@ spec:
       labels:
         app: mgmd
     spec:
-      # Hostname in config.ini. Cannot use service name.
-      hostname: mgmd-1
       containers:
       - name: mgmd
         image: hopsworks/rondb-standalone:22.10.1
@@ -49,8 +48,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mgmds
+  name: mgmd
 spec:
+  # Headless service for individual DNS records for the pods
+  clusterIP: None
   # Match the spec.template.metadata.labels of the Deployment
   selector:
     app: mgmd
@@ -58,7 +59,6 @@ spec:
     - protocol: TCP
       port: 1186
       targetPort: 1186
-  type: ClusterIP  # Expose the service internally within the cluster
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: ndbmtds
 spec:
+  serviceName: "ndbmtd"
   replicas: 1
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
@@ -14,8 +15,6 @@ spec:
       labels:
         app: ndbmtd
     spec:
-      # Hostname in config.ini. Cannot use service name.
-      hostname: ndbmtd-1
       containers:
       - name: ndbmtd
         image: hopsworks/rondb-standalone:22.10.1
@@ -23,7 +22,7 @@ spec:
           - ndbmtd
           - --ndb-nodeid=1
           - --initial
-          - --ndb-connectstring=mgmd-1:1186
+          - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
         ports:
           - containerPort: 11860
         env:
@@ -45,16 +44,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndbmtds
+  name: ndbmtd
 spec:
-  # Match the spec.template.metadata.labels of the Deployment
+  # Headless service for individual DNS records for the pods
+  clusterIP: None
+  # Match the spec.template.metadata.labels of the StatefulSet
   selector:
     app: ndbmtd
   ports:
     - protocol: TCP
       port: 11860
       targetPort: 11860
-  type: ClusterIP  # Expose the service internally within the cluster
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
