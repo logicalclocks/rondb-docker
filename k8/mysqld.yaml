@@ -15,6 +15,19 @@ spec:
       labels:
         app: mysqld
     spec:
+      initContainers:
+      - name: datanode-dependency-check
+        image: hopsworks/rondb-standalone:22.10.1
+        command:
+        # Make sure data node has connected to MGMd
+        # TODO: Parse ordinal number to apply for node-id
+        - /bin/bash
+        - -c
+        - |
+          until ./docker/rondb_standalone/healthcheck.sh mgmds-0.mgmd.default.svc.cluster.local:1186 1; do
+            echo "Dependency healthcheck of ndbmtd failed. Retrying in 5 seconds..."
+            sleep 5
+          done
       containers:
       - name: mysqld
         image: hopsworks/rondb-standalone:22.10.1
@@ -53,6 +66,8 @@ spec:
         volumeMounts:
         - name: rondb-configs
           mountPath: /srv/hops/mysql-cluster
+        # TODO: Figure out how to clean this up 
+        # We need this otherwise the rondb-configs will make it a read-only directory
         - name: rondb-mysqld-data
           mountPath: /srv/hops/mysql-cluster/mysql
         - name: rondb-mysqld-files
