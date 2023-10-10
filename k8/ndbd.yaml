@@ -20,6 +20,7 @@ spec:
         image: hopsworks/rondb-standalone:22.10.1
         args:
           - ndbmtd
+          # TODO: Parse ordinal number to apply for node-id
           - --ndb-nodeid=1
           - --initial
           - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
@@ -33,6 +34,17 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            # TODO: Parse ordinal number to apply for node-id 
+            - './docker/rondb_standalone/healthcheck.sh mgmds-0.mgmd.default.svc.cluster.local:1186 1'
+          failureThreshold: 3
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          timeoutSeconds: 15
         volumeMounts:
         - name: rondb-ndbmtd-data
           mountPath: /srv/hops/mysql-cluster/ndb_data
