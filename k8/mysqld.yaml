@@ -54,7 +54,9 @@ spec:
         livenessProbe:
           exec:
             command:
-              - mysqladmin ping -uroot
+              - 'mysqladmin'
+              - 'ping'
+              - '-uroot'
           failureThreshold: 6
           initialDelaySeconds: 25
           periodSeconds: 10
