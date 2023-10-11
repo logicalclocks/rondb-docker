@@ -139,11 +139,10 @@ echo "CREATE DATABASE IF NOT EXISTS \`ycsb\` ;" | mysql
 
 # shellcheck disable=SC2153
 if [ "$MYSQL_BENCH_USER" ]; then
-    echo "[entrypoints/mysqld.sh] Running this command now:"
-    echo "CREATE USER '$MYSQL_BENCH_USER'@'%' IDENTIFIED BY '$MYSQL_BENCH_PASSWORD' ;"
-    echo "CREATE USER '$MYSQL_BENCH_USER'@'%' IDENTIFIED BY '$MYSQL_BENCH_PASSWORD' ;" | mysql
+    echo "[entrypoints/mysqld.sh] Initializing benchmarking user $MYSQL_BENCH_USER"
+    
+    echo "CREATE USER IF NOT EXISTS '$MYSQL_BENCH_USER'@'%' IDENTIFIED BY '$MYSQL_BENCH_PASSWORD' ;" | mysql
 
-    # TODO: Consider placing into docker-entrypoint-initdb.d
     # Grant MYSQL_BENCH_USER rights to all benchmarking databases
     echo "GRANT NDB_STORED_USER ON *.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
     echo "GRANT ALL PRIVILEGES ON \`sysbench%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
@@ -151,9 +150,10 @@ if [ "$MYSQL_BENCH_USER" ]; then
     echo "GRANT ALL PRIVILEGES ON \`sbtest%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
     echo "GRANT ALL PRIVILEGES ON \`ycsb%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
 else
-    echo '[entrypoints/mysqld.sh] Not creating custom user. MYSQL_BENCH_USER and MYSQL_BENCH_PASSWORD must be specified to do so.'
+    echo '[entrypoints/mysqld.sh] Not creating benchmark user. MYSQL_BENCH_USER and MYSQL_BENCH_PASSWORD must be specified to do so.'
 fi
 
+# TODO: Mount the init scripts directory as a volume
 for f in ./docker/rondb_standalone/entrypoints/init_scripts/*; do
     case "$f" in
     *.sh)
