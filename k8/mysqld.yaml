@@ -66,8 +66,10 @@ spec:
             add:
               - SYS_NICE
         volumeMounts:
+        # Only mount single file, otherwise entire directory becomes read-only
         - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster
+          mountPath: /srv/hops/mysql-cluster/my.cnf
+          subPath: my.cnf
         # TODO: Figure out how to clean this up 
         # We need this otherwise the rondb-configs will make it a read-only directory
         - name: rondb-mysqld-data

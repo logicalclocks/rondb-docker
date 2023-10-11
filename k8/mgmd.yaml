@@ -33,8 +33,10 @@ spec:
               fieldRef:
                 fieldPath: metadata.name
         volumeMounts:
+        # Only mount single file, otherwise entire directory becomes read-only
         - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster
+          mountPath: /srv/hops/mysql-cluster/config.ini
+          subPath: config.ini
         - name: rondb-mgmd-data
           mountPath: /srv/hops/mysql-cluster/data
         - name: rondb-mgmd-log
