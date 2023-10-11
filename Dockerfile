@@ -25,13 +25,14 @@ RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt-$TARGETPLATFORM \
     libaio1 libaio-dev \
     libncurses5 libnuma-dev \
     bc default-jdk maven \
-    sudo iproute2
+    sudo iproute2 dnsutils
     # Java & Maven are required by YCSB
     # bc is required by dbt2
     # libaio is a dynamic library used by RonDB
     # libncurses5 & libnuma-dev are required for x86 only
     # sudo is required in the entrypoint
     # iproute2 is for using the command `ss`
+    # dnsutils is for using the command `nslookup` in K8s
 
 # Let PATH survive through sudo
 RUN sed -ri '/secure_path/d' /etc/sudoers
