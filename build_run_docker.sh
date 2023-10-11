@@ -628,8 +628,8 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
 
         template+="$ENV_FIELD"
         template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_ALLOW_EMPTY_PASSWORD" "true")"
-        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_USER" "$MYSQL_USER")"
-        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_PASSWORD" "$MYSQL_PASSWORD")"
+        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_BENCH_USER" "$MYSQL_BENCH_USER")"
+        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_BENCH_PASSWORD" "$MYSQL_BENCH_PASSWORD")"
         if [ "$CONTAINER_NUM" -eq 1 ]; then
             # Only need one mysqld to setup databases, users, etc.
             template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_SETUP_APP" "1")"
@@ -774,7 +774,7 @@ if [ $NUM_BENCH_NODES -gt 0 ]; then
         fi
 
         template+="$ENV_FIELD"
-        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_PASSWORD" "$MYSQL_PASSWORD")"
+        template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_BENCH_PASSWORD" "$MYSQL_BENCH_PASSWORD")"
 
         # There are cases where the MySQLd is up, but the cluster is not.
         # Also, we may not have MySQLds configured at all.
@@ -853,14 +853,14 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
 
         # This will always have 1 benchmarking and 1 MySQLd container, and 1 Sysbench instance
         AUTOBENCH_SYSBENCH_SINGLE=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
-            "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD" \
+            "$SINGLE_MYSQLD_IP" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
             "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
             "$AUTO_SYS_THREAD_COUNTS_TO_RUN" "$AUTO_SYS_SYSBENCH_ROWS" \
             "1")
         echo "$AUTOBENCH_SYSBENCH_SINGLE" > "$AUTOBENCH_SYS_SINGLE_FILEPATH"
 
         AUTOBENCH_DBT2_SINGLE=$(printf "$AUTOBENCH_DBT2_TEMPLATE" \
-            "$SINGLE_MYSQLD_IP" "$MYSQL_USER" "$MYSQL_PASSWORD" \
+            "$SINGLE_MYSQLD_IP" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
             "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
             "$AUTO_DBT2_DBT2_WAREHOUSES")
         echo "$AUTOBENCH_DBT2_SINGLE" > "$AUTOBENCH_DBT2_SINGLE_FILEPATH"
@@ -869,14 +869,14 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
             echo "Writing benchmarking files for multiple MySQLds"
 
             AUTOBENCH_SYSBENCH_MULTI=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
-                "$MULTI_MYSQLD_IPS" "$MYSQL_USER" "$MYSQL_PASSWORD" \
+                "$MULTI_MYSQLD_IPS" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
                 "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
                 "$AUTO_SYS_THREAD_COUNTS_TO_RUN" "$AUTO_SYS_SYSBENCH_ROWS" \
                 "$NUM_MYSQLD_NODES")
             echo "$AUTOBENCH_SYSBENCH_MULTI" > "$AUTOBENCH_SYS_MULTI_FILEPATH"
 
             AUTOBENCH_DBT2_MULTI=$(printf "$AUTOBENCH_DBT2_TEMPLATE" \
-                "$MULTI_MYSQLD_IPS" "$MYSQL_USER" "$MYSQL_PASSWORD" \
+                "$MULTI_MYSQLD_IPS" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
                 "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
                 "$AUTO_DBT2_DBT2_WAREHOUSES")
             echo "$AUTOBENCH_DBT2_MULTI" > "$AUTOBENCH_DBT2_MULTI_FILEPATH"

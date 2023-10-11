@@ -18,7 +18,7 @@ set -e
 
 # WARNING: This file has been dumbed down to meet the simple requirements of
 #          running / testing a mysql server. DO NOT use this file in a
-#          production setting. Specifically do not use the MYSQL_PASSWORD
+#          production setting. Specifically do not use the MYSQL_BENCH_PASSWORD
 #          in the command-line.
 
 # Fetch value from server config
@@ -31,7 +31,7 @@ _get_config() {
 }
 
 # Check if entrypoint (and the container) is running as root
-# Important: Distinguish between MYSQLD_USER and MYSQL_USER
+# Important: Distinguish between MYSQLD_USER and MYSQL_BENCH_USER
 if [ "$(id --user)" = "0" ]; then
     echo "[entrypoints/mysqld.sh] We are running as root; setting MYSQLD_USER to 'mysql'"
     is_root=1
@@ -138,20 +138,20 @@ echo "CREATE DATABASE IF NOT EXISTS \`dbt2\` ;" | mysql
 echo "CREATE DATABASE IF NOT EXISTS \`ycsb\` ;" | mysql
 
 # shellcheck disable=SC2153
-if [ "$MYSQL_USER" ]; then
+if [ "$MYSQL_BENCH_USER" ]; then
     echo "[entrypoints/mysqld.sh] Running this command now:"
-    echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
-    echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" | mysql
+    echo "CREATE USER '$MYSQL_BENCH_USER'@'%' IDENTIFIED BY '$MYSQL_BENCH_PASSWORD' ;"
+    echo "CREATE USER '$MYSQL_BENCH_USER'@'%' IDENTIFIED BY '$MYSQL_BENCH_PASSWORD' ;" | mysql
 
     # TODO: Consider placing into docker-entrypoint-initdb.d
-    # Grant MYSQL_USER rights to all benchmarking databases
-    echo "GRANT NDB_STORED_USER ON *.* TO '$MYSQL_USER'@'%' ;" | mysql
-    echo "GRANT ALL PRIVILEGES ON \`sysbench%\`.* TO '$MYSQL_USER'@'%' ;" | mysql
-    echo "GRANT ALL PRIVILEGES ON \`dbt%\`.* TO '$MYSQL_USER'@'%' ;" | mysql
-    echo "GRANT ALL PRIVILEGES ON \`sbtest%\`.* TO '$MYSQL_USER'@'%' ;" | mysql
-    echo "GRANT ALL PRIVILEGES ON \`ycsb%\`.* TO '$MYSQL_USER'@'%' ;" | mysql
+    # Grant MYSQL_BENCH_USER rights to all benchmarking databases
+    echo "GRANT NDB_STORED_USER ON *.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
+    echo "GRANT ALL PRIVILEGES ON \`sysbench%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
+    echo "GRANT ALL PRIVILEGES ON \`dbt%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
+    echo "GRANT ALL PRIVILEGES ON \`sbtest%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
+    echo "GRANT ALL PRIVILEGES ON \`ycsb%\`.* TO '$MYSQL_BENCH_USER'@'%' ;" | mysql
 else
-    echo '[entrypoints/mysqld.sh] Not creating custom user. MYSQL_USER and MYSQL_PASSWORD must be specified to do so.'
+    echo '[entrypoints/mysqld.sh] Not creating custom user. MYSQL_BENCH_USER and MYSQL_BENCH_PASSWORD must be specified to do so.'
 fi
 
 for f in ./docker/rondb_standalone/entrypoints/init_scripts/*; do

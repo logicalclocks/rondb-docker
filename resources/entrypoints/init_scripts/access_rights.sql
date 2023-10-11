@@ -1,1 +1,1 @@
-GRANT ALL PRIVILEGES ON *.* TO 'mysql' @'%';
+GRANT ALL PRIVILEGES ON *.* TO 'hopsworks' @'%';

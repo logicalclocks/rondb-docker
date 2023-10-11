@@ -46,9 +46,9 @@ spec:
             value: "0"
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "true"
-          - name: MYSQL_USER
+          - name: MYSQL_BENCH_USER
             value: "mysql"
-          - name: MYSQL_PASSWORD
+          - name: MYSQL_BENCH_PASSWORD
             value: "Abc123?e"
           - name: MYSQL_SETUP_APP
             value: "1"
