@@ -73,30 +73,30 @@ echo '[entrypoints/mysqld.sh] Database initialized'
 
 export MYSQLD_PARENT_PID=$$
 if [ -z "$MYSQL_SETUP_APP" ]; then
-    echo '[entrypoints/mysqld.sh] Not setting up app here; going straight to execution of mysqld'
+    echo '[entrypoints/mysqld.sh] Not setting up app here; going straight to execution of MySQLd'
     echo "[entrypoints/mysqld.sh] Running: $*"
     exec "$@"
 fi
 
-echo '[entrypoints/mysqld.sh] Executing mysqld as daemon with no networking allowed...'
+echo '[entrypoints/mysqld.sh] Executing MySQLd as daemon with no networking allowed...'
 
 "$@" \
     --daemonize \
     --skip-networking
 
-echo '[entrypoints/mysqld.sh] Successfully executed mysqld with networking disabled, we can start changing users, passwords & permissions via a local socket without other clients interfering.'
+echo '[entrypoints/mysqld.sh] Successfully executed MySQLd with networking disabled, we can start changing users, passwords & permissions via a local socket without other clients interfering.'
 
 # Get config
 SOCKET="$(_get_config 'socket' "$@")"
 echo "[entrypoints/mysqld.sh] SOCKET: $SOCKET"
 
-echo "[entrypoints/mysqld.sh] Pinging mysqld..."
+echo "[entrypoints/mysqld.sh] Pinging MySQLd..."
 for ping_attempt in {1..30}; do
     if mysqladmin --socket="$SOCKET" ping &>/dev/null; then
-        echo "[entrypoints/mysqld.sh] Successfully pinged mysqld on attempt $ping_attempt"
+        echo "[entrypoints/mysqld.sh] Successfully pinged MySQLd on attempt $ping_attempt"
         break
     fi
-    echo "[entrypoints/mysqld.sh] Failed pinging mysqld on attempt $ping_attempt"
+    echo "[entrypoints/mysqld.sh] Failed pinging MySQLd on attempt $ping_attempt"
     sleep 1
 done
 if [ "$ping_attempt" = 30 ]; then
