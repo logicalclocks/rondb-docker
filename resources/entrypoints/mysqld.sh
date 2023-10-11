@@ -78,6 +78,14 @@ if [ -z "$MYSQL_SETUP_APP" ]; then
     exec "$@"
 fi
 
+###########################################
+### !!! ONLY RUN THE FOLLOWING ONCE !!! ###
+###########################################
+
+########################
+### RUN LOCAL MYSQLD ###
+########################
+
 echo '[entrypoints/mysqld.sh] Executing MySQLd as daemon with no networking allowed...'
 
 "$@" \
@@ -103,6 +111,10 @@ if [ "$ping_attempt" = 30 ]; then
     echo >&2 '[entrypoints/mysqld.sh] Timeout during MySQL init.'
     exit 1
 fi
+
+###############################
+### SETUP USERS & PASSWORDS ###
+###############################
 
 # If the password variable is a filename we use the contents of the file. We
 # read this first to make sure that a proper error is generated for empty files.
@@ -133,6 +145,10 @@ EOF
 
 DUMMY_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
 
+####################################
+### SETUP BENCHMARKING DATABASES ###
+####################################
+
 # Benchmarking table; all other tables will be created by the benchmakrs themselves
 echo "CREATE DATABASE IF NOT EXISTS \`dbt2\` ;" | mysql
 echo "CREATE DATABASE IF NOT EXISTS \`ycsb\` ;" | mysql
@@ -153,6 +169,10 @@ else
     echo '[entrypoints/mysqld.sh] Not creating benchmark user. MYSQL_BENCH_USER and MYSQL_BENCH_PASSWORD must be specified to do so.'
 fi
 
+##############################
+### RUN CUSTOM SQL SCRIPTS ###
+##############################
+
 # TODO: Mount the init scripts directory as a volume
 for f in ./docker/rondb_standalone/entrypoints/init_scripts/*; do
     case "$f" in
@@ -167,6 +187,10 @@ for f in ./docker/rondb_standalone/entrypoints/init_scripts/*; do
     *) echo "[entrypoints/mysqld.sh] ignoring $f" ;;
     esac
 done
+
+#################################################
+### STOP LOCAL MYSQLD AND START PROPER MYSQLD ###
+#################################################
 
 # When using a local socket, mysqladmin shutdown will only complete when the
 # server is actually down.
