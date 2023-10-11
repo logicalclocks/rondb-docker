@@ -70,12 +70,6 @@ spec:
         - name: rondb-configs
           mountPath: /srv/hops/mysql-cluster/my.cnf
           subPath: my.cnf
-        # TODO: Figure out how to clean this up 
-        # We need this otherwise the rondb-configs will make it a read-only directory
-        - name: rondb-mysqld-data
-          mountPath: /srv/hops/mysql-cluster/mysql
-        - name: rondb-mysqld-files
-          mountPath: /srv/hops/mysql-cluster/mysql-files
       # StatefulSets work with PVCs to create a dedicated persistent volume for
       # each pod replica, ensuring that a pod always re-attaches to the same data
       # even if it is rescheduled to a different node.
@@ -83,12 +77,6 @@ spec:
       - name: rondb-configs
         configMap:
           name: rondb-configs
-      - name: rondb-mysqld-data
-        persistentVolumeClaim:
-          claimName: rondb-mysqld-data-claim
-      - name: rondb-mysqld-files
-        persistentVolumeClaim:
-          claimName: rondb-mysqld-files-claim
 ---
 apiVersion: v1
 kind: Service
@@ -104,25 +92,3 @@ spec:
     - protocol: TCP
       port: 3306
       targetPort: 3306
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rondb-mysqld-data-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: rondb-mysqld-files-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
