@@ -24,7 +24,6 @@ spec:
         - /bin/bash
         - -c
         - |
-          apt-get update && apt-get install -y dnsutils
           until nslookup mgmds-0.mgmd.default.svc.cluster.local; do
             echo "Waiting for mgmds-0.mgmd.default.svc.cluster.local to be resolvable..."
             sleep 3
