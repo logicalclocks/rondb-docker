@@ -19,14 +19,20 @@ spec:
       - name: datanode-dependency-check
         image: hopsworks/rondb-standalone:22.10.1
         command:
-        # Make sure data node has connected to MGMd
         # TODO: Parse ordinal number to apply for node-id
         - /bin/bash
         - -c
         - |
+          apt-get update && apt-get install -y dnsutils
+          until nslookup mgmds-0.mgmd.default.svc.cluster.local; do
+            echo "Waiting for mgmds-0.mgmd.default.svc.cluster.local to be resolvable..."
+            sleep 3
+          done
+
+          # Wait until data node is ready
           until ./docker/rondb_standalone/healthcheck.sh mgmds-0.mgmd.default.svc.cluster.local:1186 1; do
-            echo "Dependency healthcheck of ndbmtd failed. Retrying in 5 seconds..."
-            sleep 5
+            echo "Dependency healthcheck of ndbmtd failed. Retrying in 3 seconds..."
+            sleep 3
           done
       containers:
       - name: rdrs
