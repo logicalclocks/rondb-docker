@@ -43,6 +43,9 @@ spec:
           source /srv/hops/mysql-cluster/common.env
           source /srv/hops/mysql-cluster/container.env
 
+          AUTOBENCH_SYSBENCH_TEMPLATE=$(cat /srv/hops/mysql-cluster/autobench_sysbench.conf)
+          AUTOBENCH_DBT2_TEMPLATE=$(cat /srv/hops/mysql-cluster/autobench_dbt2.conf)
+
           AUTOBENCH_SYS_SINGLE_FILEPATH="/home/mysql/benchmarks/sysbench_single/autobench.conf"
           AUTOBENCH_SYS_MULTI_FILEPATH="/home/mysql/benchmarks/dbt2_single/autobench.conf"
           AUTOBENCH_DBT2_SINGLE_FILEPATH="/home/mysql/benchmarks/sysbench_multi/autobench.conf"
@@ -82,6 +85,12 @@ spec:
         #     echo "$AUTOBENCH_DBT2_MULTI" > "$AUTOBENCH_DBT2_MULTI_FILEPATH"
         # fi
         volumeMounts:
+        - name: rondb-templates
+          mountPath: /srv/hops/mysql-cluster/autobench_sysbench.conf
+          subPath: autobench_sysbench.conf
+        - name: rondb-templates
+          mountPath: /srv/hops/mysql-cluster/autobench_dbt2.conf
+          subPath: autobench_dbt2.conf
         - name: rondb-configs
           mountPath: /srv/hops/mysql-cluster/common.env
           subPath: common.env
@@ -141,6 +150,9 @@ spec:
       - name: rondb-configs
         configMap:
           name: rondb-configs
+      - name: rondb-templates
+        configMap:
+          name: rondb-templates
       - name: sysbench-single
         persistentVolumeClaim:
           claimName: sysbench-single-claim
