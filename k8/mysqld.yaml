@@ -41,6 +41,12 @@ spec:
           - mysqld
         ports:
           - containerPort: 3306
+        resources:
+          limits:
+            cpu: '2'
+            memory: 1400M
+          requests:
+            memory: 650M
         env:
           - name: HOST_GROUP_ID
             value: "0"

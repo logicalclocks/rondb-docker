@@ -24,6 +24,12 @@ spec:
           - --initial
         ports:
           - containerPort: 1186
+        resources:
+          limits:
+            cpu: '0.2'
+            memory: 50M
+          requests:
+            memory: 20M
         env:
           - name: HOST_GROUP_ID
             value: "0"

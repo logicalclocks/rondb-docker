@@ -37,6 +37,12 @@ spec:
           - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
         ports:
           - containerPort: 11860
+        resources:
+          limits:
+            cpu: '2'
+            memory: 3000M
+          requests:
+            memory: 2000M
         env:
           - name: HOST_GROUP_ID
             value: "0"

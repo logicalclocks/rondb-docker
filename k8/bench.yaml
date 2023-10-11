@@ -114,6 +114,12 @@ spec:
         - -c
         - |
           bench_run.sh --verbose --default-directory /home/mysql/benchmarks/$RUN_BENCHMARK $GENERATE_DBT2_DATA_FLAG
+        resources:
+          limits:
+            cpu: '2'
+            memory: 500M
+          requests:
+            memory: 100M
         env:
           - name: RUN_BENCHMARK
             value: sysbench_single
