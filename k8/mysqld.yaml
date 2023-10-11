@@ -41,6 +41,7 @@ spec:
           - mysqld
         ports:
           - containerPort: 3306
+        # TODO: Template resources
         resources:
           limits:
             cpu: '2'

@@ -37,6 +37,7 @@ spec:
           - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
         ports:
           - containerPort: 11860
+        # TODO: Template resources
         resources:
           limits:
             cpu: '2'

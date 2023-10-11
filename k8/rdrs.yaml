@@ -42,6 +42,7 @@ spec:
         ports:
           - containerPort: 4406
           - containerPort: 5406
+        # TODO: Template resources
         resources:
           limits:
             cpu: '2'

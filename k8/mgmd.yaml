@@ -24,6 +24,7 @@ spec:
           - --initial
         ports:
           - containerPort: 1186
+        # TODO: Template resources
         resources:
           limits:
             cpu: '0.2'
