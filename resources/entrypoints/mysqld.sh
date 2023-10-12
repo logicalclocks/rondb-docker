@@ -25,6 +25,8 @@ export MYSQLD_PARENT_PID=$$
 
 if [ ! -z "$MYSQL_INITIALIZE_DB" ]; then
     source $SCRIPT_DIR/mysqld_init_db.sh "$@"
+else
+    echo "[entrypoints/mysqld.sh] Not initializing MySQL databases"
 fi
 
 if [ -n "$MYSQL_INITIALIZE_ONLY" ]; then

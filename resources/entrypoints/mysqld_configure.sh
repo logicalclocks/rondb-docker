@@ -55,7 +55,7 @@ if [ ! "$result" = "0" ]; then
 fi
 echo "[entrypoints/mysqld_configure.sh] The MySQL configuration has been validated"
 
-echo '[entrypoints/mysqld_configure.sh] Initializing database...'
+echo '[entrypoints/mysqld_configure.sh] Initializing MySQL...'
 
 # Technically, specifying the user here is unnecessary since that is
 # the default user according to the Dockerfile
@@ -64,4 +64,4 @@ echo '[entrypoints/mysqld_configure.sh] Initializing database...'
     --initialize-insecure \
     --explicit_defaults_for_timestamp
 
-echo '[entrypoints/mysqld_configure.sh] Database initialized'
+echo '[entrypoints/mysqld_configure.sh] MySQL initialized'

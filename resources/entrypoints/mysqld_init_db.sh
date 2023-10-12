@@ -137,4 +137,5 @@ done
 echo '[entrypoints/mysqld_init_db.sh] Shutting down MySQLd via mysqladmin...'
 mysqladmin -uroot --password="$MYSQL_ROOT_PASSWORD" shutdown --socket="$SOCKET"
 echo "[entrypoints/mysqld_init_db.sh] Successfully shut down MySQLd"
-echo '[entrypoints/mysqld_init_db.sh] MySQL init process is done.'
+
+echo '[entrypoints/mysqld_init_db.sh] MySQL databases have been initialized'
