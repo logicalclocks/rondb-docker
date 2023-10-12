@@ -43,11 +43,6 @@ if [ "$1" = 'mysqld' ]; then
 
 	"$SCRIPT_DIR/mysqld.sh" "$@"
 else
-	if [ -n "$MYSQL_INITIALIZE_ONLY" ]; then
-		echo "[entrypoints/main.sh] MySQL already initialized and MYSQL_INITIALIZE_ONLY is set, exiting without starting MySQL..."
-		exit 0
-	fi
-
 	# "set" lets us set the arguments to the current script.
 	# the command also has its own commands (see set --help).
 	# to avoid accidentally using one of the set-commands,

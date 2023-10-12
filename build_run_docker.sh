@@ -632,7 +632,7 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
         template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_BENCH_PASSWORD" "$MYSQL_BENCH_PASSWORD")"
         if [ "$CONTAINER_NUM" -eq 1 ]; then
             # Only need one mysqld to setup databases, users, etc.
-            template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_SETUP_APP" "1")"
+            template+="$(printf "$ENV_VAR_TEMPLATE" "MYSQL_INITIALIZE_DB" "1")"
         fi
 
         BASE_DOCKER_COMPOSE_FILE+="$template"

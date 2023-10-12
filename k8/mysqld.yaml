@@ -57,7 +57,7 @@ spec:
             value: "hopsworks"
           - name: MYSQL_BENCH_PASSWORD
             value: "Abc123?e"
-          - name: MYSQL_SETUP_APP
+          - name: MYSQL_INITIALIZE_DB
             value: "1"
           # TODO: Parse ordinal number to apply for node-id
           - name: POD_NAME
