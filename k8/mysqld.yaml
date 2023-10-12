@@ -4,7 +4,7 @@ metadata:
   name: mysqlds
 spec:
   serviceName: "mysqld"
-  replicas: 1
+  replicas: 2
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
     matchLabels:
@@ -34,6 +34,43 @@ spec:
             echo "Dependency healthcheck of ndbmtd failed. Retrying in 3 seconds..."
             sleep 3
           done
+      - name: initialize-database
+        image: hopsworks/rondb-standalone:22.10.1
+        command:
+        # Only run on first pod
+        - /bin/bash
+        - -c
+        - |
+          if [ "$(hostname | grep -o '[^-]*$')" != "0" ]; then
+            echo "Only initialising MySQL database on first pod"
+            exit 0
+          elif [ -f $MYSQLD_IS_INITIALIZED_FILE ]; then
+            echo "MySQL database is already initialised"
+            exit 0
+          fi
+          $HOPSWORK_DIR/docker/rondb_standalone/entrypoints/main.sh mysqld
+          touch $MYSQLD_IS_INITIALIZED_FILE
+        env:
+          - name: MYSQLD_IS_INITIALIZED_FILE
+            value: /etc/pod-info/database-is-initialised.txt
+          - name: MYSQL_INITIALIZE_DB
+            value: "1"
+          - name: MYSQL_INITIALIZE_ONLY
+            value: "true"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "true"
+          - name: MYSQL_BENCH_USER
+            value: "hopsworks"
+          - name: MYSQL_BENCH_PASSWORD
+            value: "Abc123?e"
+          - name: HOST_GROUP_ID
+            value: "0"
+        volumeMounts:
+        - name: rondb-configs
+          mountPath: /srv/hops/mysql-cluster/my.cnf
+          subPath: my.cnf
+        - name: pod-info
+          mountPath: /etc/pod-info
       containers:
       - name: mysqld
         image: hopsworks/rondb-standalone:22.10.1
@@ -51,14 +88,6 @@ spec:
         env:
           - name: HOST_GROUP_ID
             value: "0"
-          - name: MYSQL_ALLOW_EMPTY_PASSWORD
-            value: "true"
-          - name: MYSQL_BENCH_USER
-            value: "hopsworks"
-          - name: MYSQL_BENCH_PASSWORD
-            value: "Abc123?e"
-          - name: MYSQL_INITIALIZE_DB
-            value: "1"
           # TODO: Parse ordinal number to apply for node-id
           - name: POD_NAME
             valueFrom:
@@ -90,6 +119,8 @@ spec:
       - name: rondb-configs
         configMap:
           name: rondb-configs
+      - name: pod-info
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
