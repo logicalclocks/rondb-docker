@@ -54,7 +54,7 @@ spec:
           - name: MYSQL_ALLOW_EMPTY_PASSWORD
             value: "true"
           - name: MYSQL_BENCH_USER
-            value: "mysql"
+            value: "hopsworks"
           - name: MYSQL_BENCH_PASSWORD
             value: "Abc123?e"
           - name: MYSQL_SETUP_APP
