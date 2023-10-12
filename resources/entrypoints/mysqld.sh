@@ -78,9 +78,12 @@ if [ -z "$MYSQL_SETUP_APP" ]; then
     exec "$@"
 fi
 
-###########################################
-### !!! ONLY RUN THE FOLLOWING ONCE !!! ###
-###########################################
+##############################################################
+# The following should only be run once per cluster,
+# on a single MySQLd container, but since that may be hard
+# to control, it is attempted to be written in an idempotent way.
+# We try not to keep state for our MySQLds.
+##############################################################
 
 ########################
 ### RUN LOCAL MYSQLD ###
