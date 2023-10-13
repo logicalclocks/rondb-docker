@@ -1,20 +1,12 @@
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: benchs
 spec:
-  serviceName: "bench"
-  replicas: 1
-  selector:
-    # Used by the Deployment to select and manage existing pods with the specified label
-    matchLabels:
-      app: bench
+  parallelism: 1
   template:
-    metadata:
-      # Used to apply labels to all pods created by the Deployment
-      labels:
-        app: bench
     spec:
+      restartPolicy: OnFailure
       initContainers:
       - name: mysqld-dependency-check
         image: hopsworks/rondb-standalone:22.10.1
@@ -114,6 +106,7 @@ spec:
         - -c
         - |
           bench_run.sh --verbose --default-directory /home/mysql/benchmarks/$RUN_BENCHMARK $GENERATE_DBT2_DATA_FLAG
+          cat /home/mysql/benchmarks/$RUN_BENCHMARK/final_result.txt
         # TODO: Template resources
         resources:
           limits:
@@ -131,11 +124,6 @@ spec:
             value: "Abc123?e"
           - name: HOST_GROUP_ID
             value: "0"
-          # TODO: Parse ordinal number to apply for node-id
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
         volumeMounts:
         # Only mount single file, otherwise entire directory becomes read-only
         - name: rondb-configs
@@ -149,9 +137,10 @@ spec:
           mountPath: /home/mysql/benchmarks/sysbench_multi
         - name: dbt2-multi
           mountPath: /home/mysql/benchmarks/dbt2_multi
-      # StatefulSets work with PVCs to create a dedicated persistent volume for
-      # each pod replica, ensuring that a pod always re-attaches to the same data
-      # even if it is rescheduled to a different node.
+    ################################################################
+    # TODO: Figure out how volumes work when we run benchmarks in parallel
+    #       Do they need to be accessed by multiple containers?
+    ################################################################
       volumes:
       - name: rondb-configs
         configMap:
@@ -215,14 +204,3 @@ spec:
   resources:
     requests:
       storage: 10Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: bench
-spec:
-  # Headless service for individual DNS records for the pods
-  clusterIP: None
-  # Match the spec.template.metadata.labels of the StatefulSet
-  selector:
-    app: bench
