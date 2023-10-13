@@ -70,6 +70,10 @@ fi
 
 if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
     echo >&2 '[entrypoints/mysqld_init_db.sh] No password option specified for root user.'
+    if [ -z "$MYSQL_ALLOW_EMPTY_PASSWORD" ]; then
+        echo >&2 '[entrypoints/mysqld_init_db.sh] Set MYSQL_ALLOW_EMPTY_PASSWORD to allow the server to start with an empty root password'
+        exit 1
+    fi
 fi
 
 # Defining the client command used throughout the script

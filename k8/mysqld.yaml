@@ -51,11 +51,16 @@ spec:
         env:
           - name: HOST_GROUP_ID
             value: "0"
+          # TODO: Add this to secrets
+          # - name: MYSQL_ROOT_PASSWORD
+          #   value: "Abc123?eeee"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "true"
+          # TODO: Add this to secrets
           - name: MYSQL_BENCH_USER
             value: "hopsworks"
           - name: MYSQL_BENCH_PASSWORD
             value: "Abc123?e"
-          # TODO: Parse ordinal number to apply for node-id
           - name: POD_NAME
             valueFrom:
               fieldRef:
