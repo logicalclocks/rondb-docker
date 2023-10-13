@@ -28,6 +28,8 @@
 
 echo '[entrypoints/mysqld_init_db.sh] Executing MySQLd as daemon with no networking allowed...'
 
+echo "[entrypoints/mysqld_init_db.sh] Running $* --daemonize --skip-networking"
+
 "$@" \
     --daemonize \
     --skip-networking
