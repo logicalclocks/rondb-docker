@@ -101,10 +101,13 @@ spec:
       - name: bench
         image: hopsworks/rondb-standalone:22.10.1
         command:
-        # Alternatively: 'sleep infinity' for manual tests
+        # - Alternatively: 'sleep infinity' for manual tests
+        # - If we needed to change hostname & activate API slots, we could
+        # do this via the MGM client here using $HOSTNAME.
         - /bin/bash
         - -c
         - |
+          set -e
           bench_run.sh --verbose --default-directory /home/mysql/benchmarks/$RUN_BENCHMARK $GENERATE_DBT2_DATA_FLAG
           cat /home/mysql/benchmarks/$RUN_BENCHMARK/final_result.txt
         # TODO: Template resources
@@ -140,6 +143,7 @@ spec:
     ################################################################
     # TODO: Figure out how volumes work when we run benchmarks in parallel
     #       Do they need to be accessed by multiple containers?
+    #       If we print the results, the volumes are not needed anymore?
     ################################################################
       volumes:
       - name: rondb-configs
