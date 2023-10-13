@@ -4,6 +4,7 @@ metadata:
   name: mysqlds
 spec:
   serviceName: "mysqld"
+  # Max 3
   replicas: 2
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
