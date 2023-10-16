@@ -38,8 +38,8 @@ spec:
           AUTOBENCH_DBT2_TEMPLATE=$(cat /srv/hops/mysql-cluster/autobench_dbt2.conf)
 
           AUTOBENCH_SYS_SINGLE_FILEPATH="/home/mysql/benchmarks/sysbench_single/autobench.conf"
-          AUTOBENCH_SYS_MULTI_FILEPATH="/home/mysql/benchmarks/dbt2_single/autobench.conf"
-          AUTOBENCH_DBT2_SINGLE_FILEPATH="/home/mysql/benchmarks/sysbench_multi/autobench.conf"
+          AUTOBENCH_SYS_MULTI_FILEPATH="/home/mysql/benchmarks/sysbench_multi/autobench.conf"
+          AUTOBENCH_DBT2_SINGLE_FILEPATH="/home/mysql/benchmarks/dbt2_single/autobench.conf"
           AUTOBENCH_DBT2_MULTI_FILEPATH="/home/mysql/benchmarks/dbt2_multi/autobench.conf"
 
           MGMD_IPS=mgmds-0.mgmd.default.svc.cluster.local
@@ -61,6 +61,9 @@ spec:
 
         # if [ "$NUM_MYSQLD_NODES" -gt 1 ]; then
         #     echo "Writing benchmarking files for multiple MySQLds"
+
+        #     NUM_MYSQLD_NODES=2
+        #     MULTI_MYSQLD_IPS="mysqlds-0.mysqld.default.svc.cluster.local;mysqlds-1.mysqld.default.svc.cluster.local"
 
         #     AUTOBENCH_SYSBENCH_MULTI=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
         #         "$MULTI_MYSQLD_IPS" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
