@@ -41,9 +41,9 @@ spec:
         resources:
           limits:
             cpu: '2'
-            memory: 3000M
+            memory: 3200M
           requests:
-            memory: 2000M
+            memory: 2300M
         env:
           - name: HOST_GROUP_ID
             value: "0"
