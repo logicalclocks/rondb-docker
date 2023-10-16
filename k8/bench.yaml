@@ -25,6 +25,11 @@ spec:
             echo "Dependency healthcheck of MySQLd failed. Retrying in a bit."
             sleep $(((RANDOM % 2)+2))
           done
+
+          until nslookup mysqlds-0.mysqld.default.svc.cluster.local; do
+            echo "Waiting for mysqlds-0.mysqld.default.svc.cluster.local to be resolvable..."
+            sleep $(((RANDOM % 2)+2))
+          done
       - name: populate-benchmark-files
         image: hopsworks/rondb-standalone:22.10.1
         command:
@@ -110,7 +115,8 @@ spec:
         - /bin/bash
         - -c
         - |
-          set -e
+          # Seems like MySQLd can still take a while to start up
+          sleep 10
           bench_run.sh --verbose --default-directory /home/mysql/benchmarks/$RUN_BENCHMARK $GENERATE_DBT2_DATA_FLAG
           cat /home/mysql/benchmarks/$RUN_BENCHMARK/final_result.txt
         # TODO: Template resources
