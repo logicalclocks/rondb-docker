@@ -1,0 +1,26 @@
+apiVersion: v1
+name: RonDBCluster
+version: 1.0.0
+# kubeVersion: A SemVer range of compatible Kubernetes versions (optional)
+description: A Helm chart for RonDBCluster
+type: application
+keywords:
+  - RonDB
+  - Database
+  - Distributed
+  - LATS
+  - MySQL
+  - Hopsworks
+home: The URL of this projects home page (optional)
+sources:
+  - https://github.com/logicalclocks/rondb
+  - https://github.com/logicalclocks/rondb-docker
+maintainers:
+  - name: Vincent Lohse
+    email: vincent.lohse@hopsworks.ai
+    url: https://github.com/olapiv
+# icon: A URL to an SVG or PNG image to be used as an icon (optional).
+appVersion: 22.10.1
+deprecated: false
+# annotations:
+#   example: A list of annotations keyed by name (optional).

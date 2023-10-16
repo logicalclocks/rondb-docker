@@ -1,0 +1,58 @@
+dockerTag: 22.10.1
+
+mysqlRootPassword: "Abc123?eeee"
+
+benchmarking:
+  enabled: false
+  mysqlUsername: "hopsworks"
+  mysqlPassword: "Abc123?e"
+  type: "sysbench_single"
+
+clusterSize:
+  activeDataReplicas: 1
+  numNodeGroups: 1
+  numMySQLServers: 1
+  numRdrs: 1
+
+configIni:
+  NumCPUs: 4
+  TotalMemoryConfig: 2900M
+  MaxNoOfTables: 384
+  MaxNoOfAttributes: 8000
+  MaxNoOfTriggers: 4000
+  TransactionMemory: 300M
+  SharedGlobalMemory: 300M
+  ReservedConcurrentOperations: 50000
+  FragmentLogFileSize: 128M
+  MaxNoOfConcurrentOperations: 200000
+
+  MySQLdSlotsPerNode: 4
+  ApiSlotsPerNode: 4
+
+resources:
+  limits:
+    cpus:
+      mgmds: '0.2'
+      ndbmtds: 2
+      mysqlds: 2
+      rdrs: 2
+      benchs: 2
+    memory:
+      mgmds: 50M
+      ndbmtds: 3200M
+      mysqlds: 1400M
+      rdrs: 500M
+      benchs: 500M
+  requests:
+    cpus:
+      mgmds: '0.2'
+      ndbmtds: 1
+      mysqlds: 1
+      rdrs: 100M
+      benchs: 1
+    memory:
+      mgmds: 20M
+      ndbmtds: 2300M
+      mysqlds: 650M
+      rdrs: 1
+      benchs: 100M
