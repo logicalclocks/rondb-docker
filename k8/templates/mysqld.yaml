@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: mysqlds
 spec:
-  serviceName: "mysqld"
+  serviceName: mysqld
   replicas: {{ .Values.clusterSize.numMySQLServers }}
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
@@ -103,6 +103,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  # Match the spec.serviceName
   name: mysqld
 spec:
   # Headless service for individual DNS records for the pods

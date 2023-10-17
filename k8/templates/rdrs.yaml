@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: rdrss
 spec:
-  serviceName: "rdrs"
+  serviceName: rdrs
   replicas: {{ .Values.clusterSize.numRdrs }}
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
@@ -73,6 +73,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  # Match the spec.serviceName
   name: rdrs
 spec:
   # Headless service for individual DNS records for the pods

@@ -1,21 +1,23 @@
+{{- range $nodeGroup := until ($.Values.clusterSize.numNodeGroups | int) }}
 apiVersion: apps/v1
 kind: StatefulSet
-{{- range $nodeGroup := until ($.Values.clusterSize.numNodeGroups | int) }}
 metadata:
-  # This will have the form of "ndbmtd-0", "ndbmtd-1", etc.
-  name: ndbmtd
+  # This will have the form of "node-group-0-0", "node-group-0-1", etc.
+  name: node-group-{{ $nodeGroup }}
 spec:
-  serviceName: node-group-{{ $nodeGroup }}
+  serviceName: ndbmtd-ng-{{ $nodeGroup }}
   replicas: {{ $.Values.clusterSize.activeDataReplicas }}
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
     matchLabels:
-      app: ndbmtd
+      rondbService: ndbmtd
+      nodeGroup: "{{ $nodeGroup }}"
   template:
     metadata:
-      # Used to apply labels to all pods created by the Deployment
+      # Used to apply labels to all pods created by the StatefulSet
       labels:
-        app: ndbmtd
+        rondbService: ndbmtd
+        nodeGroup: "{{ $nodeGroup }}"
     spec:
       initContainers:
       - name: mgmd-dependency-check
@@ -50,7 +52,8 @@ spec:
         env:
           - name: HOST_GROUP_ID
             value: "0"
-          # TODO: Parse ordinal number to apply for node-id
+          - name: NODE_GROUP
+            value: "{{ $nodeGroup }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -81,23 +84,25 @@ spec:
       - name: rondb-ndbmtd-log
         persistentVolumeClaim:
           claimName: rondb-ndbmtd-log-claim
-{{ end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndbmtd
+  # Match the spec.serviceName
+  name: ndbmtd-ng-{{ $nodeGroup }}
 spec:
   # Headless service for individual DNS records for the pods
   clusterIP: None
   # Match the spec.template.metadata.labels of the StatefulSet
   selector:
-    app: ndbmtd
+    rondbService: ndbmtd
+    nodeGroup: "{{ $nodeGroup }}"
   ports:
     - protocol: TCP
       port: 11860
       targetPort: 11860
 ---
+{{ end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

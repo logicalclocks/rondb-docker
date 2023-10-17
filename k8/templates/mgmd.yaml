@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: mgmds
 spec:
-  serviceName: "mgmd"
+  serviceName: mgmd
   replicas: 1
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
@@ -62,6 +62,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  # Match the spec.serviceName
   name: mgmd
 spec:
   # Headless service for individual DNS records for the pods
