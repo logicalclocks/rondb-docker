@@ -10,9 +10,10 @@ benchmarking:
 
 clusterSize:
   activeDataReplicas: 1
-  numNodeGroups: 1
-  numMySQLServers: 1
-  numRdrs: 1
+  numNodeGroups: 2
+  numMySQLServers: 2
+  maxNumMySQLServers: 5
+  # numRdrs: 1
 
 configIni:
   NumCPUs: 4

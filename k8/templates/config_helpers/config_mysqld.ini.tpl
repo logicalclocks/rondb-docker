@@ -1,9 +1,9 @@
 {{ define "config_mysqld" }}
 #MySQL Servers, Memcached servers, and Clusterj clients.
 [MYSQLD]
-NodeId=%s
+NodeId={{ .nodeId }}
 LocationDomainId=0
-NodeActive=%s
-ArbitrationRank=%s
-HostName=%s
+NodeActive={{ .isActive }}
+ArbitrationRank=1
+HostName=mysqlds-{{ .replica }}.mysqld.default.svc.cluster.local
 {{ end }}
