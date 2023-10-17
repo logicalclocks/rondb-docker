@@ -5,8 +5,8 @@ metadata:
 #   namespace: {{ .Release.Namespace }}
 data:
     config.ini: |
-{{ .Files.Get "templates/rondb_configs/config.ini.tpl" | indent 4 }}
+{{ tpl (.Files.Get "files/config.ini") . | indent 8 }}
     my.cnf: |
-{{ .Files.Get "templates/rondb_configs/my.cnf.tpl" | indent 4 }}
+{{ tpl (.Files.Get "files/my.cnf") . | indent 8 }}
     rest_api.json: |
-{{ .Files.Get "k8/templates/rondb_configs/rest_api.json.tpl" | indent 4 }}
+{{ tpl (.Files.Get "files/rest_api.json") . | indent 8 }}
