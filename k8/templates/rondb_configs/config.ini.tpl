@@ -143,14 +143,11 @@ ArbitrationRank=2
 # the cluster and before this can be done the node must be
 # activated and an inactive node can change its hostname.
 # Inactive nodes have NodeActive set to 0.
-{{ $nodeGroups := (.Values.clusterSize.numNodeGroups | int) }}
-{{ $activeReplicas := (.Values.clusterSize.activeDataReplicas | int) }}
-
-{{ range $nodeGroup := until $nodeGroups }}
+{{ range $nodeGroup := until ($.Values.clusterSize.numNodeGroups | int) }}
 {{ range $replica := until 3 }}
 [NDBD]
 {{ $isActive := 0 }}
-{{ if lt $replica $activeReplicas }}
+{{ if lt $replica ($.Values.clusterSize.activeDataReplicas | int) }}
   {{ $isActive = 1 }}
 {{ end}}
 {{ include "config_ndbd" (dict "replica" $replica "nodeGroup" $nodeGroup "isActive" $isActive) }}
