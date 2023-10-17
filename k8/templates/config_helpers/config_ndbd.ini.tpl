@@ -4,7 +4,7 @@
 NodeId={{ add $offset (add .replica 1) }}
 NodeGroup={{ .nodeGroup }}
 NodeActive={{ .isActive }}
-HostName=node-group-{{ $nodeGroup }}-{{ .replica }}.ndbmtd-ng-{{ $nodeGroup }}.default.svc.cluster.local
+HostName=node-group-{{ .nodeGroup }}-{{ .replica }}.ndbmtd-ng-{{ .nodeGroup }}.default.svc.cluster.local
 LocationDomainId=0
 ServerPort=11860
 DataDir=/srv/hops/mysql-cluster/log
