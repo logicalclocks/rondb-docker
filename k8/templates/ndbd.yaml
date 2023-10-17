@@ -33,11 +33,9 @@ spec:
       containers:
       - name: ndbmtd
         image: hopsworks/rondb-standalone:{{ $.Values.dockerTag }}
+        command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_k8.sh"]
         args:
           - ndbmtd
-          # TODO: Parse ordinal number to apply for node-id
-          # TODO: Calculate node-id here
-          - --ndb-nodeid=1
           - --initial
           - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
         ports:
@@ -63,8 +61,12 @@ spec:
             command:
             - /bin/bash
             - -c
-            # TODO: Parse ordinal number to apply for node-id 
-            - './docker/rondb_standalone/healthcheck.sh mgmds-0.mgmd.default.svc.cluster.local:1186 1'
+            - |
+                # Equivalent to replication factor of pod
+                POD_ID=$(echo $POD_NAME | grep -o '[0-9]\+$')
+                NODE_ID_OFFSET=$(($NODE_GROUP*3))
+                NODE_ID=$(($NODE_ID_OFFSET+$POD_ID+1))
+                ./docker/rondb_standalone/healthcheck.sh mgmds-0.mgmd.default.svc.cluster.local:1186 $NODE_ID
           failureThreshold: 3
           initialDelaySeconds: 20
           periodSeconds: 15
