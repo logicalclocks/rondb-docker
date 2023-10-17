@@ -52,6 +52,8 @@ ndb-join-pushdown=1
 
 # use the cluster connection pool to reduce cluster connection setup time
 ndb-cluster-connection-pool=4
+
+# TODO: Figure out how to define this...
 # ndb-cluster-connection-pool-nodeids=67,68,69,70
 
 # Log more data at MySQL Server about ndb
