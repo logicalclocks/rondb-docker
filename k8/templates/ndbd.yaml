@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
-{{- range $nodeGroup := until .Values.clusterSize.numNodeGroups }}
+{{- range $nodeGroup := until ($.Values.clusterSize.numNodeGroups | int) }}
 metadata:
   # This will have the form of "ndbmtd-0", "ndbmtd-1", etc.
   name: ndbmtd
 spec:
-  serviceName: {{ node-group-$nodeGroup }}
-  replicas: {{ .Values.clusterSize.activeDataReplicas }}
+  serviceName: node-group-{{ $nodeGroup }}
+  replicas: {{ $.Values.clusterSize.activeDataReplicas }}
   selector:
     # Used by the Deployment to select and manage existing pods with the specified label
     matchLabels:
@@ -19,7 +19,7 @@ spec:
     spec:
       initContainers:
       - name: mgmd-dependency-check
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: hopsworks/rondb-standalone:{{ $.Values.dockerTag }}
         command:
         - /bin/bash
         - -c
@@ -30,7 +30,7 @@ spec:
           done
       containers:
       - name: ndbmtd
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: hopsworks/rondb-standalone:{{ $.Values.dockerTag }}
         args:
           - ndbmtd
           # TODO: Parse ordinal number to apply for node-id
@@ -42,11 +42,11 @@ spec:
           - containerPort: 11860
         resources:
           limits:
-            cpu: {{ .Values.resources.limits.cpus.ndbmtds }}
-            memory: {{ .Values.resources.limits.memory.ndbmtds }}
+            cpu: {{ $.Values.resources.limits.cpus.ndbmtds }}
+            memory: {{ $.Values.resources.limits.memory.ndbmtds }}
           requests:
-            cpu: {{ .Values.resources.requests.cpus.ndbmtds }}
-            memory: {{ .Values.resources.requests.memory.ndbmtds }}
+            cpu: {{ $.Values.resources.requests.cpus.ndbmtds }}
+            memory: {{ $.Values.resources.requests.memory.ndbmtds }}
         env:
           - name: HOST_GROUP_ID
             value: "0"

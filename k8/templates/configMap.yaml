@@ -8,5 +8,5 @@ data:
 {{ .Files.Get "templates/rondb_configs/config.ini" | indent 4 }}
     my.cnf: |
 {{ .Files.Get "templates/rondb_configs/my.cnf" | indent 4 }}
-    rest_api.json |
+    rest_api.json: |
 {{ .Files.Get "k8/templates/rondb_configs/rest_api.json" | indent 4 }}
