@@ -53,7 +53,7 @@ Threads: 16 Mean: 824
 Threads: 24 Mean: 886
 Threads: 32 Mean: 914
 
-2 MySQLds, 1 data node, 1 bench, max 730%, sysbench_multi, USING explicit CPU requests
+2 MySQLds, 1 data node, 1 bench, max 730%, sysbench_multi, CPU requests < limits
 
 Threads: 1 Mean: 311
 Threads: 2 Mean: 587
@@ -63,6 +63,18 @@ Threads: 12 Mean: 1439
 Threads: 16 Mean: 1512
 Threads: 24 Mean: 1501
 Threads: 32 Mean: 1484
+
+2 MySQLds, 1 data node, 1 bench, max 800%, sysbench_multi, resource limits==requests
+
+Threads: 1 Mean: 306
+Threads: 2 Mean: 601
+Threads: 4 Mean: 1007
+Threads: 8 Mean: 1439
+Threads: 12 Mean: 1632
+Threads: 16 Mean: 1745
+Threads: 24 Mean: 1897
+Threads: 32 Mean: 1967
+Threads: 64 Mean: 1972 <-- extra..
 
 2 MySQLds, 1 data node, 1 bench, max 850%, sysbench_multi, OMITTING resource requests
 
