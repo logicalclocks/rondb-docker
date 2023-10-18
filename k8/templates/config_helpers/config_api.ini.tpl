@@ -1,8 +1,8 @@
 {{ define "config_api" }}
 [API]
-NodeId=%s
+NodeId={{ .nodeId }}
 LocationDomainId=0
-NodeActive=%s
-ArbitrationRank=%s
-HostName=%s
+NodeActive={{ .isActive }}
+ArbitrationRank=1
+HostName=rdrs-{{ .replica }}.rdrs.default.svc.cluster.local
 {{ end }}

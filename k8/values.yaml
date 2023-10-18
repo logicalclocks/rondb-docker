@@ -13,7 +13,8 @@ clusterSize:
   numNodeGroups: 2
   numMySQLServers: 2
   maxNumMySQLServers: 5
-  # numRdrs: 1
+  numRdrs: 1
+  maxNumRdrs: 2
 
 configIni:
   NumCPUs: 4
@@ -28,7 +29,7 @@ configIni:
   MaxNoOfConcurrentOperations: 200000
 
   MySQLdSlotsPerNode: 4
-  ApiSlotsPerNode: 4
+  RdrsSlotsPerNode: 2
 
 resources:
   limits:
