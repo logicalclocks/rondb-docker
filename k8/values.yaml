@@ -70,11 +70,11 @@ resources:
       mgmds: '0.2'
       ndbmtds: 1
       mysqlds: 1
-      rdrs: 100M
+      rdrs: 1
       benchs: 1
     memory:
       mgmds: 20M
       ndbmtds: 2300M
       mysqlds: 650M
-      rdrs: 1
+      rdrs: 100M
       benchs: 100M
