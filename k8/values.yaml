@@ -18,7 +18,10 @@ clusterSize:
 
 configIni:
   NumCPUs: 4
-  TotalMemoryConfig: 2900M
+  # The containers will otherwise assume that
+  # they can occupy the entire node's memory
+  # (at least in minikube + Docker driver)
+  TotalMemoryConfig: 3100M
   MaxNoOfTables: 384
   MaxNoOfAttributes: 8000
   MaxNoOfTriggers: 4000
@@ -41,7 +44,7 @@ resources:
       benchs: 2
     memory:
       mgmds: 50M
-      ndbmtds: 3200M
+      ndbmtds: 3300M
       mysqlds: 1400M
       rdrs: 500M
       benchs: 500M
