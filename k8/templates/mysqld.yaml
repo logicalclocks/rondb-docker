@@ -37,7 +37,8 @@ spec:
       containers:
       - name: mysqld
         image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
-        # TODO: Try sedding my.cnf with node-ids
+        # Sed my.cnf file with NodeIds
+        command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_mysqld_k8.sh"]
         args:
           - mysqld
         ports:
@@ -62,6 +63,8 @@ spec:
             value: {{ .Values.benchmarking.mysqlUsername }}
           - name: MYSQL_BENCH_PASSWORD
             value: {{ .Values.benchmarking.mysqlPassword }}
+          - name: CONNECTIONS_PER_MYSQLD
+            value: "{{ .Values.configIni.MySQLdSlotsPerNode }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -85,7 +88,8 @@ spec:
         volumeMounts:
         # Only mount single file, otherwise entire directory becomes read-only
         - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster/my.cnf
+          # Using "raw", so that we can sed NodeIds into the file
+          mountPath: /srv/hops/mysql-cluster/my-raw.cnf
           subPath: my.cnf
         - name: dbs-have-initialized
           mountPath: /etc/pod-info
