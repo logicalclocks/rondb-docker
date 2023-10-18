@@ -7,10 +7,27 @@ benchmarking:
   mysqlUsername: "hopsworks"
   mysqlPassword: "Abc123?e"
   type: "sysbench_single"
+  dbt2:
+    numWarehouses: 4
+    runSingle: |
+      # NUM_MYSQL_SERVERS  NUM_WAREHOUSES  NUM_TERMINALS
+      1                    1               1
+      1                    2               1
+      1                    4               1
+      1                    4               2
+    runMulti: |
+      # NUM_MYSQL_SERVERS  NUM_WAREHOUSES  NUM_TERMINALS
+      2                    1               1
+      2                    2               1
+      2                    2               2
+  sysbench:
+    threadCountsToRun: "1;2;4;8;12;16;24;32"
+    rows: 100000
+
 
 clusterSize:
   activeDataReplicas: 1
-  numNodeGroups: 2
+  numNodeGroups: 1
   numMySQLServers: 2
   maxNumMySQLServers: 5
   numRdrs: 1

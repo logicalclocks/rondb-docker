@@ -1,0 +1,108 @@
+{{ define "autobench_sysbench" }}
+#############################
+#### Software definition ####
+#############################
+
+MYSQL_BIN_INSTALL_DIR=/srv/hops/mysql
+BENCHMARK_TO_RUN="sysbench"
+
+#########################################
+#### Storage definition (empty here) ####
+#########################################
+
+#################################
+#### MySQL Server definition ####
+#################################
+
+SERVER_HOST="{{ .mySQLdHosts }}"
+MYSQL_USER="{{ .mysqlUsername }}"
+MYSQL_PASSWORD="{{ .mysqlPassword }}"
+NDB_MULTI_CONNECTION="{{ .MySQLdSlotsPerNode }}"
+
+# PARAMETER                 EXAMPLE                         DESCRIPTION
+#################################################################################################
+# TASKSET                   "numactl"
+# SERVER_HOST               "172.31.23.248;172.31.31.222"
+# SERVER_PORT               "3316"
+# SERVER_BIND               "0"
+# SERVER_CPUS               "9-17,27-35"
+# MYSQL_USER                "mysql"
+# MYSQL_PASSWORD            "unsafe-password"
+# NDB_MULTI_CONNECTION      "4"                             Number of slots in the config.ini per MySQL server
+#                                                           Essentially how many connections we allow per IP with a
+#                                                           MySQL server. This allows us to scale to up to 32 CPUs
+#                                                           per MySQL VM/container/IP.
+
+##############################
+#### NDB node definitions ####
+##############################
+
+NDB_MGMD_NODES="{{ .mgmdHosts }}"
+
+# PARAMETER                EXAMPLE                          DESCRIPTION
+#################################################################################################
+# USE_SUPERSOCKET          "yes"
+# USE_SHM                  "yes"
+# NDBD_NODES               "172.31.23.248;172.31.31.222"
+# NDB_MGMD_NODES           "172.31.23.248:3001"             The management connection string; a list of IPs of all the
+#                                                           management servers
+# NDB_TOTAL_MEMORY         "64G"
+# NDBD_BIND                "0,1"
+# NDBD_CPUS                "0-6,18-24"
+# NDB_SPIN_METHOD          "DatabaseMachineSpinning"
+
+##############################
+#### Benchmark definition ####
+##############################
+
+SYSBENCH_TEST="oltp_rw"
+THREAD_COUNTS_TO_RUN="{{ .threadCountsToRun }}"
+MAX_TIME="30"
+SYSBENCH_ROWS=""{{ .rows }}""
+SYSBENCH_INSTANCES="{{ .numMySQLds }}"
+
+# PARAMETER                 EXAMPLE                         DESCRIPTION                             
+#################################################################################################
+# SYSBENCH_TEST             "oltp_rw" / "oltp_ro"           Sysbench OLTP RW does 10 primary key lookups per transaction,     
+#                                                           2 Updates, 1 Insert and 1 Delete and 4 range scan queries that
+#                                                           each fetch 100 rows. This makes OLTP RW using a lot of network
+#                                                           bandwidth. To test with less networking and also test RonDB's
+#                                                           handling of filtering of rows one can set SB_USE_FILTER to yes.
+# THREAD_COUNTS_TO_RUN      "1;2;4;8;12;16;24"              Number of threads each Sysbench instance will use; each value
+#                                                           corresponds to a separate test.
+# MAX_TIME                  "30"                            Seconds for each test
+# SB_USE_FILTER             "yes"                           Handling of filtering of rows
+# SB_RANGE_SIZE             "10"                            Number of rows per scan       
+# SYSBENCH_ROWS             "10000000"                      Number of rows per table; This affects the amount of memory
+#                                                           required for the benchmark             
+# SB_USE_SECONDARY_INDEX    "yes"                           Whether to use one secondary index per table    
+# SB_NUM_TABLES             "2"                             Number of tables per Sysbench run       
+# BENCHMARK_TASKSET         "numactl"                                                                       
+# BENCHMARK_BIND            "0"                                                                             
+# BENCHMARK_CPUS            "8,9,26,27"                                                                     
+# SYSBENCH_INSTANCES        "2"                             This sets the number of parallel Sysbench instances running.
+#                                                           Every Sysbench instance will be assigned to a MySQL server
+#                                                           in a round robin fashion and each instance will run through 
+#                                                           the thread counts in THREAD_COUNTS_TO_RUN. It is 
+#                                                           recommended to set the Sysbench instances to be the same 
+#                                                           or smaller than the number of MySQL Servers. To run the
+#                                                           Sysbench instances on different servers, use BENCHMARK_SERVERS.
+#                                                           Otherwise, they will default to localhost.
+# BENCHMARK_SERVERS         "172.31.23.248;172.31.31.222"   Server IPs to run the benchmarks on     
+
+# ------------------------------------------------------------
+
+# To run a simple key-value lookup benchmark using Sysbench one
+# wants to remove the writes, remove the scan operations and
+# use the IN statement to fetch multiple keyed rows per SQL
+# statement. The below configuration will fetch 100 * 10 rows
+# per transaction.
+
+# SYSBENCH_TEST="oltp_ro"
+# SB_POINT_SELECTS="10"
+# SB_USE_IN_STATEMENT="100"
+# SB_SUM_RANGES="0"
+# SB_ORDER_RANGES="0"
+# SB_DISTINCT_RANGES="0"
+# SB_SIMPLE_RANGES="0"
+{{ end }}

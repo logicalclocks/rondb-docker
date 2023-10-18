@@ -1,4 +1,4 @@
-{{ if .Values.benchmarkEnabled }}
+{{ if .Values.benchmarking.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -31,82 +31,6 @@ spec:
             echo "Waiting for mysqlds-0.mysqld.default.svc.cluster.local to be resolvable..."
             sleep $(((RANDOM % 2)+2))
           done
-      - name: populate-benchmark-files
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
-        command:
-        - /bin/bash
-        - -c
-        - |
-          source /srv/hops/mysql-cluster/common.env
-          source /srv/hops/mysql-cluster/container.env
-
-          AUTOBENCH_SYSBENCH_TEMPLATE=$(cat /srv/hops/mysql-cluster/autobench_sysbench.conf)
-          AUTOBENCH_DBT2_TEMPLATE=$(cat /srv/hops/mysql-cluster/autobench_dbt2.conf)
-
-          AUTOBENCH_SYS_SINGLE_FILEPATH="/home/mysql/benchmarks/sysbench_single/autobench.conf"
-          AUTOBENCH_SYS_MULTI_FILEPATH="/home/mysql/benchmarks/sysbench_multi/autobench.conf"
-          AUTOBENCH_DBT2_SINGLE_FILEPATH="/home/mysql/benchmarks/dbt2_single/autobench.conf"
-          AUTOBENCH_DBT2_MULTI_FILEPATH="/home/mysql/benchmarks/dbt2_multi/autobench.conf"
-
-          MGMD_IPS=mgmds-0.mgmd.default.svc.cluster.local
-          SINGLE_MYSQLD_IP=mysqlds-0.mysqld.default.svc.cluster.local
-
-          # This will always have 1 benchmarking and 1 MySQLd container, and 1 Sysbench instance
-          AUTOBENCH_SYSBENCH_SINGLE=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
-            "$SINGLE_MYSQLD_IP" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
-            "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
-            "$AUTO_SYS_THREAD_COUNTS_TO_RUN" "$AUTO_SYS_SYSBENCH_ROWS" \
-            "1")
-          echo "$AUTOBENCH_SYSBENCH_SINGLE" > "$AUTOBENCH_SYS_SINGLE_FILEPATH"
-
-          AUTOBENCH_DBT2_SINGLE=$(printf "$AUTOBENCH_DBT2_TEMPLATE" \
-            "$SINGLE_MYSQLD_IP" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
-            "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
-            "$AUTO_DBT2_DBT2_WAREHOUSES")
-          echo "$AUTOBENCH_DBT2_SINGLE" > "$AUTOBENCH_DBT2_SINGLE_FILEPATH"
-
-{{ if contains "multi" .Values.benchmarking.type }}
-          echo "Writing benchmarking files for multiple MySQLds"
-
-          # TODO: Template this
-          NUM_MYSQLD_NODES=2
-          MULTI_MYSQLD_IPS="mysqlds-0.mysqld.default.svc.cluster.local;mysqlds-1.mysqld.default.svc.cluster.local"
-
-          AUTOBENCH_SYSBENCH_MULTI=$(printf "$AUTOBENCH_SYSBENCH_TEMPLATE" \
-              "$MULTI_MYSQLD_IPS" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
-              "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
-              "$AUTO_SYS_THREAD_COUNTS_TO_RUN" "$AUTO_SYS_SYSBENCH_ROWS" \
-              "$NUM_MYSQLD_NODES")
-          echo "$AUTOBENCH_SYSBENCH_MULTI" > "$AUTOBENCH_SYS_MULTI_FILEPATH"
-
-          AUTOBENCH_DBT2_MULTI=$(printf "$AUTOBENCH_DBT2_TEMPLATE" \
-              "$MULTI_MYSQLD_IPS" "$MYSQL_BENCH_USER" "$MYSQL_BENCH_PASSWORD" \
-              "$MYSQLD_SLOTS_PER_CONTAINER" "$MGMD_IPS" \
-              "$AUTO_DBT2_DBT2_WAREHOUSES")
-          echo "$AUTOBENCH_DBT2_MULTI" > "$AUTOBENCH_DBT2_MULTI_FILEPATH"
-{{ end }}
-        volumeMounts:
-        - name: rondb-templates
-          mountPath: /srv/hops/mysql-cluster/autobench_sysbench.conf
-          subPath: autobench_sysbench.conf
-        - name: rondb-templates
-          mountPath: /srv/hops/mysql-cluster/autobench_dbt2.conf
-          subPath: autobench_dbt2.conf
-        - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster/common.env
-          subPath: common.env
-        # TODO: Adjust this depending on which cluster size is being used
-        - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster/container.env
-          subPath: small.env
-        - name: sysbench-single
-          mountPath: /home/mysql/benchmarks/sysbench_single
-        - name: dbt2-single
-          mountPath: /home/mysql/benchmarks/dbt2_single
-        - name: sysbench-multi
-          mountPath: /home/mysql/benchmarks/sysbench_multi
-        - name: dbt2-multi
-          mountPath: /home/mysql/benchmarks/dbt2_multi
       containers:
       - name: bench
         image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
@@ -119,7 +43,12 @@ spec:
         - |
           # Seems like MySQLd can still take a while to start up
           sleep 10
-          bench_run.sh --verbose --default-directory /home/mysql/benchmarks/{{ .Values.benchmarking.type }} $GENERATE_DBT2_DATA_FLAG
+          bench_run.sh \
+            --verbose \
+            --default-directory /home/mysql/benchmarks/{{ .Values.benchmarking.type }} \
+{{ if contains "dbt2" .Values.benchmarking.type }}            \
+            --generate-dbt2-data
+{{ end}}
           cat /home/mysql/benchmarks/$RUN_BENCHMARK/final_result.txt
         resources:
           limits:
@@ -129,56 +58,51 @@ spec:
             cpu: {{ .Values.resources.requests.cpus.benchs }}
             memory: {{ .Values.resources.requests.memory.benchs }}
         env:
-{{ if contains "dbt2" .Values.benchmarking.type }}
-          - name: GENERATE_DBT2_DATA_FLAG
-            value: --generate-dbt2-data
-{{ end}}
           - name: MYSQL_BENCH_PASSWORD
             value: "Abc123?e"
           - name: HOST_GROUP_ID
             value: "0"
         volumeMounts:
-        # Only mount single file, otherwise entire directory becomes read-only
-        - name: rondb-configs
-          mountPath: /srv/hops/mysql-cluster/rest_api.json
-          subPath: rest_api.json
-        - name: sysbench-single
-          mountPath: /home/mysql/benchmarks/sysbench_single
-        - name: dbt2-single
-          mountPath: /home/mysql/benchmarks/dbt2_single
-        - name: sysbench-multi
-          mountPath: /home/mysql/benchmarks/sysbench_multi
-        - name: dbt2-multi
-          mountPath: /home/mysql/benchmarks/dbt2_multi
+        # Not important, but can help to debug benchmarks
+        - name: benchmarks
+          mountPath: /home/mysql/benchmarks
+
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/sysbench_single/autobench.conf
+          subPath: autobench_sysbench_single.conf
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/sysbench_multi/autobench.conf
+          subPath: autobench_sysbench_multi.conf
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/dbt2_single/autobench.conf
+          subPath: autobench_dbt2_single.conf
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/dbt2_multi/autobench.conf
+          subPath: autobench_dbt2_multi.conf
+
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/dbt2_single/dbt2_run_1.conf
+          subPath: dbt2_single_run.conf
+        - name: benchmark-configs
+          mountPath: /home/mysql/benchmarks/dbt2_multi/dbt2_run_1.conf
+          subPath: dbt2_multi_run.conf
     ################################################################
     # TODO: Figure out how volumes work when we run benchmarks in parallel
     #       Do they need to be accessed by multiple containers?
     #       If we print the results, the volumes are not needed anymore?
     ################################################################
       volumes:
-      - name: rondb-configs
+      - name: benchmarks
+        persistentVolumeClaim:
+          claimName: benchmarks-claim
+      - name: benchmark-configs
         configMap:
-          name: rondb-configs
-      - name: rondb-templates
-        configMap:
-          name: rondb-templates
-      - name: sysbench-single
-        persistentVolumeClaim:
-          claimName: sysbench-single-claim
-      - name: dbt2-single
-        persistentVolumeClaim:
-          claimName: dbt2-single-claim
-      - name: sysbench-multi
-        persistentVolumeClaim:
-          claimName: sysbench-multi-claim
-      - name: dbt2-multi
-        persistentVolumeClaim:
-          claimName: dbt2-multi-claim
+          name: benchmark-configs
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: sysbench-single-claim
+  name: benchmarks-claim
 spec:
   accessModes:
     - ReadWriteOnce
@@ -187,35 +111,23 @@ spec:
       storage: 10Mi
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: ConfigMap
 metadata:
-  name: dbt2-single-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: sysbench-multi-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Mi
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: dbt2-multi-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Mi
+  name: benchmark-configs
+#   namespace: {{ .Release.Namespace }}
+data:
+    autobench_sysbench_single.conf: |
+{{ tpl (.Files.Get "files/autobench_sysbench_single.conf") . | indent 8 }}
+    autobench_sysbench_multi.conf: |
+{{ tpl (.Files.Get "files/autobench_sysbench_multi.conf") . | indent 8 }}
+    autobench_dbt2_single.conf: |
+{{ tpl (.Files.Get "files/autobench_dbt2_single.conf") . | indent 8 }}
+    autobench_dbt2_multi.conf: |
+{{ tpl (.Files.Get "files/autobench_dbt2_multi.conf") . | indent 8 }}
+
+    dbt2_single_run.conf: |
+{{ tpl (.Files.Get "files/dbt2_single_run.conf") . | indent 8 }}
+    dbt2_multi_run.conf: |
+{{ tpl (.Files.Get "files/dbt2_multi_run.conf") . | indent 8 }}
+
 {{ end }}
