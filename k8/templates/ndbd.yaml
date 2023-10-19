@@ -34,7 +34,11 @@ spec:
       containers:
       - name: ndbmtd
         image: {{ include "image_registry" $standardContext }}rondb-standalone:{{ $.Values.dockerTag }}
-        command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_ndbd_k8.sh"]
+        command:
+        - /bin/bash
+        - -c
+        - |
+{{ include "pre_entrypoint_ndbmtds" . | indent 8 }}
         args:
           - ndbmtd
           - --initial

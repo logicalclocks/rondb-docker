@@ -1,9 +1,9 @@
+# Calculate Node Ids based on Pod name & sed my.cnf file
+
+{{ define "pre_entrypoint_mysqld" }}
 #!/bin/bash
 
 set -e
-
-# https://stackoverflow.com/a/246128/9068781
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 RAW_MYCNF_FILEPATH=/srv/hops/mysql-cluster/my-raw.cnf
 MYCNF_FILEPATH=/srv/hops/mysql-cluster/my.cnf
@@ -25,4 +25,6 @@ echo "[Pre-entrypoint-MySQLd-k8] Running Node Ids: $NODES_SEQ"
 # Replace the existing line with the new sequence in my.cnf
 sed -i "/ndb-cluster-connection-pool-nodeids/c\ndb-cluster-connection-pool-nodeids=$NODES_SEQ" $MYCNF_FILEPATH
 
-exec $SCRIPT_DIR/entrypoint.sh "$@"
+# Original entrypoint
+exec ./docker/rondb_standalone/entrypoints/entrypoint.sh "$@"
+{{ end }}

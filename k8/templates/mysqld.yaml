@@ -37,8 +37,11 @@ spec:
       containers:
       - name: mysqld
         image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
-        # Sed my.cnf file with NodeIds
-        command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_mysqld_k8.sh"]
+        command:
+        - /bin/bash
+        - -c
+        - |
+{{ include "pre_entrypoint_mysqld" . | indent 8 }}
         args:
           - mysqld
         ports:
