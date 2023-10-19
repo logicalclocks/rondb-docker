@@ -2,7 +2,17 @@ dockerTag: 22.10.1
 # Omit for local registry (Use `minikube image load rondb-standalone:22.10.1`)
 imageRegistry: docker.io/hopsworks
 
-mysqlRootPassword: "Abc123?eeee"
+mysql:
+  rootPassword: "Abc123?eeee"
+  # Add SQL scripts here that will be run at startup of the MySQLd container.
+  # Be sure to make these scripts idempotent, since they *could* be run again
+  # if the container is restarted and something is configured incorrectly.
+  # Do so by using `IF NOT EXISTS` to the SQL commands.
+  sqlInitContent: |
+    CREATE TABLE IF NOT EXISTS ycsb.usertable (
+        YCSB_KEY VARCHAR(255) PRIMARY KEY,
+        FIELD0 varbinary(4096)
+    );
 
 clusterSize:
   activeDataReplicas: 1

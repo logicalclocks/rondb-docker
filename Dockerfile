@@ -137,6 +137,9 @@ RUN touch $MYSQL_UNIX_PORT
 COPY --chown=mysql:mysql ./resources/entrypoints ./docker/rondb_standalone/entrypoints
 COPY --chown=mysql:mysql ./resources/healthcheck.sh ./docker/rondb_standalone/healthcheck.sh
 
+# Can be used to mount SQL init scripts
+RUN mkdir ./docker/rondb_standalone/sql_init_scripts
+
 # Creating benchmarking files/directories
 ENV BENCHMARKS_DIR=/home/mysql/benchmarks
 RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
