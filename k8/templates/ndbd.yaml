@@ -105,7 +105,7 @@ spec:
       port: 11860
       targetPort: 11860
 ---
-{{ end }}
+{{- end -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

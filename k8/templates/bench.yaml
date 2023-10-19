@@ -1,4 +1,4 @@
-{{ if .Values.benchmarking.enabled }}
+{{- if .Values.benchmarking.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -46,9 +46,9 @@ spec:
           bench_run.sh \
             --verbose \
             --default-directory /home/mysql/benchmarks/{{ .Values.benchmarking.type }} \
-{{ if contains "dbt2" .Values.benchmarking.type }}            \
+{{- if contains "dbt2" .Values.benchmarking.type -}}
             --generate-dbt2-data
-{{ end}}
+{{- end -}}
           cat /home/mysql/benchmarks/{{ .Values.benchmarking.type }}/final_result.txt
         resources:
           limits:
@@ -130,4 +130,4 @@ data:
     dbt2_multi_run.conf: |
 {{ tpl (.Files.Get "files/dbt2_multi_run.conf") . | indent 8 }}
 
-{{ end }}
+{{- end -}}

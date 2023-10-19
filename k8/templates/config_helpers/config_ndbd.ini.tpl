@@ -1,6 +1,6 @@
 {{ define "config_ndbd" }}
+{{- $offset := ( mul .nodeGroup 3) -}}
 [NDBD]
-{{ $offset := ( mul .nodeGroup 3) }}
 NodeId={{ add $offset (add .replica 1) }}
 NodeGroup={{ .nodeGroup }}
 NodeActive={{ .isActive }}
