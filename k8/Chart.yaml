@@ -1,7 +1,16 @@
 apiVersion: v2
 name: RonDBCluster
-version: 1.0.0
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 0.1.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application.
+appVersion: 22.10.1
+
 # kubeVersion: A SemVer range of compatible Kubernetes versions (optional)
+
 description: A Helm chart for RonDBCluster
 type: application
 keywords:
@@ -19,8 +28,7 @@ maintainers:
   - name: Vincent Lohse
     email: vincent.lohse@hopsworks.ai
     url: https://github.com/olapiv
-# icon: A URL to an SVG or PNG image to be used as an icon (optional).
-appVersion: 22.10.1
+icon: https://uploads-ssl.webflow.com/6013cab68382f702f5481fa8/621f2f69a834b6df8d52cf75_Logo%20-%20Yellow%2C%20on%20black%20BG%404x.png
 deprecated: false
 # annotations:
 #   example: A list of annotations keyed by name (optional).
