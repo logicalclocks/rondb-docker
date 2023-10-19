@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
       - name: datanode-dependency-check
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         command:
         # TODO: Parse ordinal number to apply for node-id
         - /bin/bash
@@ -35,7 +35,7 @@ spec:
           done
       containers:
       - name: rdrs
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         args:
           - rdrs
           - -config=/srv/hops/mysql-cluster/rest_api.json

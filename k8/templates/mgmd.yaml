@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: mgmd
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         args:
           - ndb_mgmd
           - --ndb-nodeid=65

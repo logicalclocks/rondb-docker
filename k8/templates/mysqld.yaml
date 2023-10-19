@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
       - name: datanode-dependency-check
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         command:
         # Make sure data node has connected to MGMd
         # TODO: Parse ordinal number to apply for node-id
@@ -36,7 +36,7 @@ spec:
           done
       containers:
       - name: mysqld
-        image: hopsworks/rondb-standalone:{{ .Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         # Sed my.cnf file with NodeIds
         command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_mysqld_k8.sh"]
         args:

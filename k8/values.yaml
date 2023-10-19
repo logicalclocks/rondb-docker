@@ -1,4 +1,6 @@
 dockerTag: 22.10.1
+# Omit for local registry (Use `minikube image load rondb-standalone:22.10.1`)
+imageRegistry: docker.io/hopsworks
 
 mysqlRootPassword: "Abc123?eeee"
 

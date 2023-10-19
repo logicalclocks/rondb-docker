@@ -21,7 +21,7 @@ spec:
     spec:
       initContainers:
       - name: mgmd-dependency-check
-        image: hopsworks/rondb-standalone:{{ $.Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         command:
         - /bin/bash
         - -c
@@ -32,7 +32,7 @@ spec:
           done
       containers:
       - name: ndbmtd
-        image: hopsworks/rondb-standalone:{{ $.Values.dockerTag }}
+        image: {{ include "image_registry" . }}rondb-standalone:{{ .Values.dockerTag }}
         command: ["/srv/hops/docker/rondb_standalone/entrypoints/pre_entrypoint_ndbd_k8.sh"]
         args:
           - ndbmtd
