@@ -45,10 +45,10 @@ spec:
           sleep 10
           bench_run.sh \
             --verbose \
-            --default-directory /home/mysql/benchmarks/{{ .Values.benchmarking.type }} \
-{{- if contains "dbt2" .Values.benchmarking.type -}}
+            --default-directory /home/mysql/benchmarks/{{ .Values.benchmarking.type }}
+{{- if contains "dbt2" .Values.benchmarking.type }}
             --generate-dbt2-data
-{{- end -}}
+{{ end }}
           cat /home/mysql/benchmarks/{{ .Values.benchmarking.type }}/final_result.txt
         resources:
           limits:
