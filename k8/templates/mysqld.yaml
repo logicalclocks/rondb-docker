@@ -41,8 +41,9 @@ spec:
         - /bin/bash
         - -c
         - |
-{{ include "pre_entrypoint_mysqld" . | indent 8 }}
+{{ include "entrypoint_mysqld" . | indent 10 }}
         args:
+          - --agument-that-will-be-omitted
           - mysqld
         ports:
           - containerPort: 3306
@@ -94,10 +95,10 @@ spec:
           # Using "raw", so that we can sed NodeIds into the file
           mountPath: /srv/hops/mysql-cluster/my-raw.cnf
           subPath: my.cnf
-{{- if .Values.mysql.sqlInitContent -}}
+{{ if .Values.mysql.sqlInitContent }}
         - name: sql-init-script
           mountPath: /srv/hops/docker/rondb_standalone/sql_init_scripts
-{{- end -}}
+{{ end }}
         - name: dbs-have-initialized
           mountPath: /etc/pod-info
       # StatefulSets work with PVCs to create a dedicated persistent volume for
@@ -107,6 +108,11 @@ spec:
       - name: rondb-configs
         configMap:
           name: rondb-configs
+{{ if .Values.mysql.sqlInitContent }}
+      - name: sql-init-script
+        configMap:
+          name: sql-init-script
+{{ end }}
       - name: dbs-have-initialized
         persistentVolumeClaim:
           claimName: dbs-have-initialized-claim
@@ -138,7 +144,7 @@ spec:
     requests:
       storage: 1Ki
 ---
-{{- if .Values.mysql.sqlInitContent -}}
+{{ if .Values.mysql.sqlInitContent }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

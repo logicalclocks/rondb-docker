@@ -104,5 +104,7 @@ else
 	elif [ "$1" == "ndb_mgm" ]; then
 		echo "[entrypoints/main.sh] Starting ndb_mgm"
 	fi
+    
+    echo "[entrypoints/main.sh] Running: $*"
 	exec "$@"
 fi

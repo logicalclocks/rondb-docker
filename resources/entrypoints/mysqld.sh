@@ -23,34 +23,8 @@ source $SCRIPT_DIR/mysqld_configure.sh "$@"
 
 export MYSQLD_PARENT_PID=$$
 
-# Kubernetes only
-if [ -n "$POD_NAME" ]; then
-    # We use a different logic in Kubernetes because we assume containers to start/restart
-    # regularly, so we don't want to initialize the databases every time.
-    echo "[entrypoints/mysqld.sh] We're running inside of Kubernetes (POD_NAME is set to '$POD_NAME')"
-    if [[ $POD_NAME != *"-0" ]]; then
-        echo "[entrypoints/mysqld.sh] Not initializing MySQL databases because this is not the first MySQLd pod"
-        MYSQL_INITIALIZE_DB=
-    else
-        if [ ! -f "$MYSQL_DATABASES_INIT_FILE" ]; then
-            echo "[entrypoints/mysqld.sh] File $MYSQL_DATABASES_INIT_FILE does not exist; we're initializing MySQL databases"
-            MYSQL_INITIALIZE_DB=1
-        else
-            echo "[entrypoints/mysqld.sh] File $MYSQL_DATABASES_INIT_FILE already exist; we're not initializing MySQL databases"
-            MYSQL_INITIALIZE_DB=
-        fi
-    fi
-fi
-
 if [ ! -z "$MYSQL_INITIALIZE_DB" ]; then
     source $SCRIPT_DIR/mysqld_init_db.sh "$@"
-
-    # Kubernetes only
-    if [ -n "$POD_NAME" ]; then
-        echo "[entrypoints/mysqld.sh] Creating file $MYSQL_DATABASES_INIT_FILE"
-        touch $MYSQL_DATABASES_INIT_FILE
-    fi
-
 else
     echo "[entrypoints/mysqld.sh] Not initializing MySQL databases"
 fi

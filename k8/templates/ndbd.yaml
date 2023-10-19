@@ -38,8 +38,9 @@ spec:
         - /bin/bash
         - -c
         - |
-{{ include "pre_entrypoint_ndbmtds" . | indent 8 }}
+{{ include "pre_entrypoint_ndbmtds" . | indent 10 }}
         args:
+          - --agument-that-will-be-omitted
           - ndbmtd
           - --initial
           - --ndb-connectstring=mgmds-0.mgmd.default.svc.cluster.local:1186
@@ -109,7 +110,7 @@ spec:
       port: 11860
       targetPort: 11860
 ---
-{{- end -}}
+{{ end }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
