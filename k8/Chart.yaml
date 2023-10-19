@@ -11,7 +11,7 @@ keywords:
   - LATS
   - MySQL
   - Hopsworks
-home: The URL of this projects home page (optional)
+home: https://www.rondb.com
 sources:
   - https://github.com/logicalclocks/rondb
   - https://github.com/logicalclocks/rondb-docker
