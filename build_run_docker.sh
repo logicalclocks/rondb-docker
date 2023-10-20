@@ -371,9 +371,9 @@ else
         RONDB_TARBALL_LOCAL_REMOTE=local
     fi
 
-    $DOCKERFILE_ARG=
+    DOCKERFILE_ARG=
     if [[ $RONDB_VERSION == *"21.04"* ]]; then
-        $DOCKERFILE_ARG="--file Dockerfile.21.04"
+        DOCKERFILE_ARG="--file Dockerfile.21.04"
     fi
 
     docker buildx build . $DOCKERFILE_ARG \
