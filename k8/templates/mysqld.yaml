@@ -68,7 +68,7 @@ spec:
           - name: MYSQL_BENCH_PASSWORD
             value: {{ .Values.benchmarking.mysqlPassword }}
           - name: CONNECTIONS_PER_MYSQLD
-            value: "{{ .Values.configIni.MySQLdSlotsPerNode }}"
+            value: {{ .Values.configIni.MySQLdSlotsPerNode | quote}}
           - name: POD_NAME
             valueFrom:
               fieldRef:

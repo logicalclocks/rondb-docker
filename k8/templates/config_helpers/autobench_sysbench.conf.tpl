@@ -14,10 +14,10 @@ BENCHMARK_TO_RUN="sysbench"
 #### MySQL Server definition ####
 #################################
 
-SERVER_HOST="{{ .mySQLdHosts }}"
-MYSQL_USER="{{ .mysqlUsername }}"
-MYSQL_PASSWORD="{{ .mysqlPassword }}"
-NDB_MULTI_CONNECTION="{{ .MySQLdSlotsPerNode }}"
+SERVER_HOST={{ .mySQLdHosts | quote }}
+MYSQL_USER={{ .mysqlUsername | quote }}
+MYSQL_PASSWORD={{ .mysqlPassword | quote }}
+NDB_MULTI_CONNECTION={{ .MySQLdSlotsPerNode | quote }}
 
 # PARAMETER                 EXAMPLE                         DESCRIPTION
 #################################################################################################
@@ -37,7 +37,7 @@ NDB_MULTI_CONNECTION="{{ .MySQLdSlotsPerNode }}"
 #### NDB node definitions ####
 ##############################
 
-NDB_MGMD_NODES="{{ .mgmdHosts }}"
+NDB_MGMD_NODES={{ .mgmdHosts | quote }}
 
 # PARAMETER                EXAMPLE                          DESCRIPTION
 #################################################################################################
@@ -56,10 +56,10 @@ NDB_MGMD_NODES="{{ .mgmdHosts }}"
 ##############################
 
 SYSBENCH_TEST="oltp_rw"
-THREAD_COUNTS_TO_RUN="{{ .threadCountsToRun }}"
+THREAD_COUNTS_TO_RUN={{ .threadCountsToRun | quote }}
 MAX_TIME="30"
-SYSBENCH_ROWS=""{{ .rows }}""
-SYSBENCH_INSTANCES="{{ .numMySQLds }}"
+SYSBENCH_ROWS={{ .rows | quote }}
+SYSBENCH_INSTANCES={{ .numMySQLds | quote }}
 
 # PARAMETER                 EXAMPLE                         DESCRIPTION                             
 #################################################################################################

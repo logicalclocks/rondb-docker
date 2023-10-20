@@ -12,13 +12,13 @@ spec:
     # Used by the Deployment to select and manage existing pods with the specified label
     matchLabels:
       rondbService: ndbmtd
-      nodeGroup: "{{ $nodeGroup }}"
+      nodeGroup: {{ $nodeGroup | quote }}
   template:
     metadata:
       # Used to apply labels to all pods created by the StatefulSet
       labels:
         rondbService: ndbmtd
-        nodeGroup: "{{ $nodeGroup }}"
+        nodeGroup: {{ $nodeGroup | quote }}
     spec:
       initContainers:
       - name: mgmd-dependency-check
@@ -57,7 +57,7 @@ spec:
           - name: HOST_GROUP_ID
             value: "0"
           - name: NODE_GROUP
-            value: "{{ $nodeGroup }}"
+            value: {{ $nodeGroup | quote }}
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -104,7 +104,7 @@ spec:
   # Match the spec.template.metadata.labels of the StatefulSet
   selector:
     rondbService: ndbmtd
-    nodeGroup: "{{ $nodeGroup }}"
+    nodeGroup: {{ $nodeGroup | quote }}
   ports:
     - protocol: TCP
       port: 11860

@@ -14,10 +14,10 @@ BENCHMARK_TO_RUN="dbt2"
 #### MySQL Server definition ####
 #################################
 
-SERVER_HOST="{{ .mySQLdHosts }}"
-MYSQL_USER="{{ .mysqlUsername }}"
-MYSQL_PASSWORD="{{ .mysqlPassword }}"
-NDB_MULTI_CONNECTION="{{ .MySQLdSlotsPerNode }}"
+SERVER_HOST={{ .mySQLdHosts | quote }}
+MYSQL_USER={{ .mysqlUsername | quote }}
+MYSQL_PASSWORD={{ .mysqlPassword | quote }}
+NDB_MULTI_CONNECTION={{ .MySQLdSlotsPerNode | quote }}
 
 # PARAMETER                 EXAMPLE                         DESCRIPTION
 #################################################################################################
@@ -37,7 +37,7 @@ NDB_MULTI_CONNECTION="{{ .MySQLdSlotsPerNode }}"
 #### NDB node definitions ####
 ##############################
 
-NDB_MGMD_NODES="{{ .mgmdHosts }}"
+NDB_MGMD_NODES={{ .mgmdHosts | quote }}
 
 # PARAMETER                EXAMPLE                          DESCRIPTION
 #################################################################################################
@@ -56,6 +56,6 @@ NDB_MGMD_NODES="{{ .mgmdHosts }}"
 ##############################
 
 DBT2_TIME="30"
-DBT2_WAREHOUSES="{{ .numWarehouses }}"
+DBT2_WAREHOUSES={{ .numWarehouses | quote }}
 DBT2_DATA_DIR=/home/mysql/benchmarks/dbt2_data
 {{ end }}
