@@ -96,9 +96,11 @@ jobs:
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:latest
           docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
           docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker push hopsworks/$AMD_IMAGE_NAME:latest
 
   build-and-push-ARM64:
@@ -139,6 +141,7 @@ jobs:
         run: |
           docker buildx build . \
               --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
+              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
               --tag hopsworks/$ARM_IMAGE_NAME:latest \
               --platform=linux/arm64 \
               --output type=registry \
@@ -173,6 +176,9 @@ jobs:
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-latest \
+            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
+            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker buildx imagetools create -t hopsworks/rondb-standalone:latest \
             hopsworks/$AMD_IMAGE_NAME:latest \
             hopsworks/$ARM_IMAGE_NAME:latest
