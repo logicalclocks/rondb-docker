@@ -83,8 +83,9 @@ jobs:
       - name: Build AMD64 image for RONDB_VERSION_STABLE
         if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         run: |
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker buildx build . \
-              --tag rondb-standalone:$RONDB_VERSION_STABLE \
+              --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.17-x86_64.tar.gz
@@ -92,11 +93,12 @@ jobs:
       - name: Push AMD64 images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         run: |
-          docker tag rondb-standalone:$RONDB_VERSION_LTS hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE hopsworks/$AMD_IMAGE_NAME:latest
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:latest
+          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker push hopsworks/$AMD_IMAGE_NAME:latest
 
   build-and-push-ARM64:
@@ -122,8 +124,9 @@ jobs:
       # all types of benchmarking to the tests.
       - name: Build and push ARM64 image for RONDB_VERSION_LTS
         run: |
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker buildx build . \
-              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS \
+              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
               --platform=linux/arm64 \
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_LTS \
@@ -135,7 +138,7 @@ jobs:
       - name: Build and push ARM64 image for RONDB_VERSION_STABLE
         run: |
           docker buildx build . \
-              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE \
+              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
               --tag hopsworks/$ARM_IMAGE_NAME:latest \
               --platform=linux/arm64 \
               --output type=registry \
@@ -150,6 +153,8 @@ jobs:
     if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
     needs: [integration-test-and-package, build-and-push-ARM64]
     steps:
+      - uses: actions/checkout@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -161,12 +166,13 @@ jobs:
 
       - name: Create and push multi-platform image
         run: |
-          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS \
-            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS \
-            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS
-          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE \
-            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE \
-            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-$VERSION \
+            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
+            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
+            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
+            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker buildx imagetools create -t hopsworks/rondb-standalone:latest \
             hopsworks/$AMD_IMAGE_NAME:latest \
             hopsworks/$ARM_IMAGE_NAME:latest
