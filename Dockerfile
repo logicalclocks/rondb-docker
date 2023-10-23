@@ -72,8 +72,11 @@ RUN ln -s $RONDB_BIN_DIR $RONDB_BIN_DIR_SYMLINK
 
 ENV PATH=$RONDB_BIN_DIR_SYMLINK/bin:$PATH
 
-# Add RonDB to library load path
-RUN echo $RONDB_BIN_DIR_SYMLINK/lib > /etc/ld.so.conf.d/rondb.conf
+# Add RonDB libs to system path (cannot use env variables here)
+COPY <<-"EOF" /etc/ld.so.conf.d/rondb.conf
+/srv/hops/mysql/lib
+/srv/hops/mysql/lib/private
+EOF
 RUN ldconfig --verbose
 
 ENV RONDB_DATA_DIR=$HOPSWORK_DIR/mysql-cluster
