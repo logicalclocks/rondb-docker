@@ -371,7 +371,7 @@ else
         RONDB_TARBALL_LOCAL_REMOTE=local
     fi
 
-    docker buildx build . $DOCKERFILE_ARG \
+    docker buildx build . \
         --tag $RONDB_IMAGE_NAME \
         --build-arg RONDB_VERSION=$RONDB_VERSION \
         --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
