@@ -1,10 +1,14 @@
 name: Building Image, Running Benchmarks and Deploying to Dockerhub
 on:
+  # Launch on any push
   push:
   pull_request:
+    # Launch on PRs *towards* these branches
     branches:
-      - main
-    types: [opened, synchronize, reopened, edited]
+    - 'release-**'
+    - main
+    # Not running on "closed" - that is taken care of by "push" (if merged)
+    types: [opened, synchronize, reopened]
 
 env:
   RONDB_VERSION_LTS: 21.04.15
@@ -75,13 +79,13 @@ jobs:
 
       - name: Login to Dockerhub
         uses: docker/login-action@v2
-        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+        if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         with:
           username: hopsworks
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build AMD64 image for RONDB_VERSION_STABLE
-        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+        if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker buildx build . \
@@ -91,7 +95,7 @@ jobs:
               --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.17-x86_64.tar.gz
 
       - name: Push AMD64 images to Dockerhub
-        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+        if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
@@ -107,7 +111,7 @@ jobs:
 
   build-and-push-ARM64:
     runs-on: ubuntu-latest
-    if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+    if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
     steps:
       - uses: actions/checkout@v3
 
@@ -157,7 +161,7 @@ jobs:
 
   build-and-push-cross-platform-image:
     runs-on: ubuntu-latest
-    if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+    if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
     needs: [integration-test-and-package, build-and-push-ARM64]
     steps:
       - uses: actions/checkout@v3
