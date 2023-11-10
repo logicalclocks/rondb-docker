@@ -26,6 +26,7 @@ REPLICATION_FACTOR=2
 RONDB_TARBALL_PATH=
 RONDB_TARBALL_URL=
 NUM_MYSQL_SERVERS=2
+SQL_INIT_SCRIPT_CLI_DIR=
 BENCHMARK=
 VOLUMES_IN_LOCAL_DIR=
 
@@ -56,6 +57,9 @@ Usage: $0
                 - medium: at least 32 GB of memory and 8 CPU cores
                 - large: at least 32 GB of memory and 16 CPU cores
                 - xlarge: at least 64 GB of memory and 32 CPU cores ]
+    [-sql    --sql-init-scripts-dir                     <string>
+                Directory with SQL scripts that will be read
+                in entrypoint with root privileges.                 ]
     [-lv    --volumes-in-local-dir                                  
                 Replace volumes with local directories              ]
     [-d     --detached                                              ]
@@ -175,6 +179,10 @@ EXEC_CMD="$EXEC_CMD --replication-factor $REPLICATION_FACTOR"
 EXEC_CMD="$EXEC_CMD --num-mysql-nodes $NUM_MYSQL_SERVERS"
 EXEC_CMD="$EXEC_CMD --num-rest-api-nodes 1"
 EXEC_CMD="$EXEC_CMD --num-benchmarking-nodes 1"
+
+if [ -n "$SQL_INIT_SCRIPT_CLI_DIR" ]; then
+    EXEC_CMD="$EXEC_CMD --sql-init-scripts-dir $SQL_INIT_SCRIPT_CLI_DIR"
+fi
 
 if [ "$BENCHMARK" != "" ]; then
     EXEC_CMD="$EXEC_CMD --run-benchmark $BENCHMARK"
