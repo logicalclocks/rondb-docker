@@ -119,7 +119,7 @@ fi
 ### RUN CUSTOM SQL SCRIPTS ###
 ##############################
 
-for f in ./docker/rondb_standalone/sql_init_scripts/*; do
+for f in $SQL_INIT_SCRIPTS_DIR/*; do
     case "$f" in
     *.sh)
         echo "[entrypoints/mysqld_init_db.sh] Running $f"

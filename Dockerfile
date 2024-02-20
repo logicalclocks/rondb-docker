@@ -111,7 +111,8 @@ COPY --chown=mysql:mysql ./resources/entrypoints ./docker/rondb_standalone/entry
 COPY --chown=mysql:mysql ./resources/healthcheck.sh ./docker/rondb_standalone/healthcheck.sh
 
 # Can be used to mount SQL init scripts
-RUN mkdir ./docker/rondb_standalone/sql_init_scripts
+ENV SQL_INIT_SCRIPTS_DIR=$HOPSWORK_DIR/docker/rondb_standalone/sql_init_scripts
+RUN mkdir $SQL_INIT_SCRIPTS_DIR
 
 # Creating benchmarking files/directories
 ENV BENCHMARKS_DIR=/home/mysql/benchmarks
