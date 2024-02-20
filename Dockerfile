@@ -116,7 +116,7 @@ RUN mkdir ./docker/rondb_standalone/sql_init_scripts
 # Creating benchmarking files/directories
 ENV BENCHMARKS_DIR=/home/mysql/benchmarks
 RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
-    && mkdir -p sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
+    && mkdir -p sysbench sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
 
 # Avoid changing files if they are already owned by mysql; otherwise image size doubles
 RUN chown mysql:mysql --from=root:root -R $HOPSWORK_DIR /home/mysql
