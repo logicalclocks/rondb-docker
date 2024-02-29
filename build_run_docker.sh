@@ -49,7 +49,7 @@ SAVE_SAMPLE_FILES=
 DETACHED=
 RONDB_SIZE=small
 SQL_INIT_SCRIPT_CLI_DIR=$SCRIPT_DIR/resources/sql_init_scripts
-RONDB_VERSION=latest
+RONDB_VERSION=22.10.1
 
 function print_usage() {
     cat <<EOF
