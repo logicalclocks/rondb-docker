@@ -17,7 +17,7 @@ env:
   RONDB_VERSION_LTS: 21.04.16
   RONDB_VERSION_STABLE: 22.10.1
   ARM_IMAGE_NAME: rondb-standalone-arm64
-  AMD_IMAGE_NAME: rondb-standalone-amd64
+  X86_IMAGE_NAME: rondb-standalone-amd64
 
 jobs:
   integration-test-and-package:
@@ -87,7 +87,7 @@ jobs:
           username: hopsworks
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build AMD64 image for RONDB_VERSION_STABLE
+      - name: Build X86 image for RONDB_VERSION_STABLE
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
@@ -98,29 +98,29 @@ jobs:
               --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/rondb-$RONDB_VERSION_STABLE-linux-glibc2.28-x86_64.tar.gz
 
       # In the main branch, we work with "<version>-SNAPSHOT", which might as well be called "latest"
-      - name: Push AMD64 *latest* images to Dockerhub
+      - name: Push X86 *latest* images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
-          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
-          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:latest
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
-          docker push hopsworks/$AMD_IMAGE_NAME:latest
+          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:latest
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
+          docker push hopsworks/$X86_IMAGE_NAME:latest
 
-      - name: Push AMD64 *release* images to Dockerhub
+      - name: Push X86 *release* images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && startsWith(github.ref_name, 'release-')
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
-          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
 
   build-and-push-ARM64:
     runs-on: ubuntu-latest
@@ -202,20 +202,20 @@ jobs:
           # those Dockerhub images in order to run the main branch.
 
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-$VERSION \
-            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
+            hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
-            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
+            hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
         
           if [[ "${{ github.ref_name == 'main' }}" == "true" ]]; then
             docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-latest \
-              hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest \
+              hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest \
               hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest
             docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-latest \
-              hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
+              hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
               hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
             docker buildx imagetools create -t hopsworks/rondb-standalone:latest \
-              hopsworks/$AMD_IMAGE_NAME:latest \
+              hopsworks/$X86_IMAGE_NAME:latest \
               hopsworks/$ARM_IMAGE_NAME:latest
           fi
