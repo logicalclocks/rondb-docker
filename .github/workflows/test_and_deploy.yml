@@ -11,6 +11,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
+  BASE_DEPLOY_URL: https://repo.hops.works/master
   RONDB_VERSION_LTS: 21.04.15
   RONDB_VERSION_STABLE: 22.10.1
   ARM_IMAGE_NAME: rondb-standalone-arm64
@@ -25,7 +26,7 @@ jobs:
       - name: Build and run Docker Compose cluster with benchmarking for RONDB_VERSION_LTS
         run: |
           ./run.sh -lv \
-            --rondb-tarball-url https://repo.hops.works/master/rondb-$RONDB_VERSION_LTS-linux-glibc2.28-x86_64.tar.gz \
+            --rondb-tarball-url $BASE_DEPLOY_URL/rondb-$RONDB_VERSION_LTS-linux-glibc2.28-x86_64.tar.gz \
             --rondb-version $RONDB_VERSION_LTS \
             --size mini \
             --run-benchmark sysbench_single \
@@ -92,7 +93,7 @@ jobs:
               --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.28-x86_64.tar.gz
+              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/rondb-$RONDB_VERSION_STABLE-linux-glibc2.28-x86_64.tar.gz
 
       # In the main branch, we work with "<version>-SNAPSHOT", which might as well be called "latest"
       - name: Push AMD64 *latest* images to Dockerhub
@@ -153,7 +154,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_LTS \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_LTS-linux-glibc2.35-arm64_v8.tar.gz \
+              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/rondb-$RONDB_VERSION_LTS-linux-glibc2.35-arm64_v8.tar.gz \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
@@ -171,7 +172,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.35-arm64_v8.tar.gz \
+              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/rondb-$RONDB_VERSION_STABLE-linux-glibc2.35-arm64_v8.tar.gz \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
