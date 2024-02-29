@@ -41,7 +41,7 @@ RUN mkdir $DOWNLOADS_CACHE_DIR
 
 # Copying bare minimum of Hopsworks cloud environment for now
 FROM rondb_runtime_dependencies as cloud_preparation
-ARG RONDB_VERSION=21.04.15
+ARG RONDB_VERSION=21.04.16
 RUN groupadd mysql && adduser mysql --ingroup mysql
 ENV HOPSWORK_DIR=/srv/hops
 ENV RONDB_BIN_DIR=$HOPSWORK_DIR/mysql-$RONDB_VERSION
