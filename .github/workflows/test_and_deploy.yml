@@ -1,5 +1,7 @@
 name: Building Image, Running Benchmarks and Deploying to Dockerhub
 on:
+  # Launch on manual trigger
+  workflow_dispatch:
   # Launch on any push
   push:
   pull_request:
