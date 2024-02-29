@@ -29,27 +29,27 @@ To run the optimal cluster for your machine, `run.sh` can be run with 5 differen
 
 - **mini**: 
   - Cluster setup: 1 MGM server, 1 data node, 1 MySQL server and 1 API node
-  - Docker resource utilisation: 2.5 GB of memory and up to 4 CPUs
+  - Docker resource utilization: 2.5 GB of memory and up to 4 CPUs
   - Recommended machine: 8 GB of memory
 
 - **small** (default):
   - Cluster setup: 1 MGM server, 2 data nodes, 2 MySQL servers and 1 API node
-  - Docker resource utilisation: 6 GB of memory and up to 16 CPUs
+  - Docker resource utilization: 6 GB of memory and up to 16 CPUs
   - Recommended machine: 16 GB of memory and 16 CPUs
 
 - **medium**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 16 GB of memory and up to 16 CPUs
+  - Docker resource utilization: 16 GB of memory and up to 16 CPUs
   - Recommended machine: 32 GB of memory and 16 CPUs
 
 - **large**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 20 GB of memory and up to 32 CPUs
+  - Docker resource utilization: 20 GB of memory and up to 32 CPUs
   - Recommended machine: 32 GB of memory and 32 CPUs
 
 - **xlarge**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 30 GB of memory and up to 50 CPUs
+  - Docker resource utilization: 30 GB of memory and up to 50 CPUs
   - Recommended machine: 64 GB of memory and 64 CPUs
 
 Keep in mind, that you must also allow your Docker engine to use the resources that are required. To change these restrictions in Docker Desktop, do as described [here](https://stackoverflow.com/a/44533437/9068781).
@@ -110,7 +110,7 @@ docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.16 \
 docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.16
 ```
 
-Exemplatory commands to run with running docker-compose cluster:
+Example commands to run with running docker-compose cluster:
 ```bash
 # Check current ongoing memory consumption of running cluster
 docker stats
