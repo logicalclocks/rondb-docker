@@ -115,6 +115,7 @@ ENV SQL_INIT_SCRIPTS_DIR=$HOPSWORK_DIR/docker/rondb_standalone/sql_init_scripts
 RUN mkdir $SQL_INIT_SCRIPTS_DIR
 
 # Creating benchmarking files/directories
+# When using load balancers, "sysbench" can be used for both _single and _multi
 ENV BENCHMARKS_DIR=/home/mysql/benchmarks
 RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
     && mkdir -p sysbench sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
