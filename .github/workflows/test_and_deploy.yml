@@ -21,7 +21,7 @@ env:
   LTS_X86_TARBALL_NAME: rondb-21.04.16-linux-glibc2.17-x86_64.tar.gz
   LTS_ARM_TARBALL_NAME: rondb-21.04.16-linux-glibc2.35-arm64_v8.tar.gz
   
-  RONDB_VERSION_STABLE: 22.10.1
+  RONDB_VERSION_STABLE: 22.10.3
   STABLE_X86_TARBALL_NAME: rondb-22.10.3-linux-glibc2.28-x86_64.tar.gz
   STABLE_ARM_TARBALL_NAME: rondb-22.10.3-linux-glibc2.35-arm64_v8.tar.gz
 
