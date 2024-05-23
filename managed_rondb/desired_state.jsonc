@@ -14,7 +14,7 @@
         The url nginx/hopsworks_proxy is a reverse proxy to repo.hops.works, 
         which is where Hopsworks hosts RonDB builds:
     */
-    "RonDBDownloadLink": "http://nginx/hopsworks_proxy/master/rondb-22.10.3-linux-glibc2.35-arm64_v8.tar.gz",
+    "RonDBDownloadLink": "http://nginx/hopsworks_proxy/master/rondb-22.10.3-linux-glibc2.28-arm64_v8.tar.gz",
     // A logical clock to perform rolling restarts of the ndb-agent; it can never be higher than the Id
     "NdbAgentRunningSince": 1,
     /*
