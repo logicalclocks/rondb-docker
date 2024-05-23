@@ -11,7 +11,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  RONDB_VERSION_LTS: 21.04.15
+  RONDB_VERSION_LTS: 21.04.16
   RONDB_VERSION_STABLE: 22.10.1
   ARM_IMAGE_NAME: rondb-standalone-arm64
   AMD_IMAGE_NAME: rondb-standalone-amd64
