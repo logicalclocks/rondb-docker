@@ -376,11 +376,13 @@ else
         RONDB_TARBALL_LOCAL_REMOTE=local
     fi
 
+    # We're not using this for cross-platform builds, so can use same argument twice
     docker buildx build . \
         --tag $RONDB_IMAGE_NAME \
         --build-arg RONDB_VERSION=$RONDB_VERSION \
         --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
-        --build-arg RONDB_TARBALL_URI=$RONDB_TARBALL_URI
+        --build-arg RONDB_AMD_TARBALL_URI=$RONDB_TARBALL_URI \
+        --build-arg RONDB_ARM_TARBALL_URI=$RONDB_TARBALL_URI
 fi
 
 #######################
