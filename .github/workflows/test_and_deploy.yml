@@ -101,7 +101,7 @@ jobs:
               --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_X86_TARBALL_NAME
+              --build-arg RONDB_AMD_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_X86_TARBALL_NAME
 
       # In the main branch, we work with "<version>-SNAPSHOT", which might as well be called "latest"
       - name: Push X86 *latest* images to Dockerhub
@@ -162,7 +162,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_LTS \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/$LTS_ARM_TARBALL_NAME \
+              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DEPLOY_URL/$LTS_ARM_TARBALL_NAME \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
@@ -180,7 +180,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_ARM_TARBALL_NAME \
+              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_ARM_TARBALL_NAME \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
