@@ -16,6 +16,11 @@ ARG TARGETVARIANT
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 RUN echo "TARGETARCH: $TARGETARCH; TARGETVARIANT: $TARGETVARIANT"
 
+# Fail the build if TARGETARCH is not arm64 or amd64
+RUN if [ "$TARGETARCH" != "arm64" ] && [ "$TARGETARCH" != "amd64" ]; then \
+        echo "Unsupported architecture: $TARGETARCH" && exit 1; \
+    fi
+
 RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt-$TARGETPLATFORM \
     --mount=type=cache,target=/var/lib/apt/lists,id=ubuntu22-apt-lists-$TARGETPLATFORM \
     apt-get update -y \
@@ -49,15 +54,29 @@ RUN mkdir -p $RONDB_BIN_DIR
 
 # Get RonDB tarball from local path & unpack it
 FROM cloud_preparation as local_tarball
-ARG RONDB_TARBALL_URI
-RUN --mount=type=bind,source=$RONDB_TARBALL_URI,target=$RONDB_TARBALL_URI \
-    tar xfz $RONDB_TARBALL_URI -C $RONDB_BIN_DIR --strip-components=1 \
+ARG RONDB_AMD_TARBALL_URI
+ARG RONDB_ARM_TARBALL_URI
+
+RUN case "$TARGETARCH" in \
+        amd64) echo "export TARBALL_PATH=$RONDB_AMD_TARBALL_URI" >> /env.sh;; \
+        arm64) echo "export TARBALL_PATH=$RONDB_ARM_TARBALL_URI" >> /env.sh;; \
+    esac
+
+RUN --mount=type=bind,source=.,target=/context \
+    . /env.sh \
+    && tar xfz /context/${TARBALL_PATH} -C $RONDB_BIN_DIR --strip-components=1 \
     && chown mysql:mysql -R $RONDB_BIN_DIR
 
 # Get RonDB tarball from remote url & unpack it
 FROM cloud_preparation as remote_tarball
-ARG RONDB_TARBALL_URI
-RUN wget $RONDB_TARBALL_URI -O ./temp_tarball.tar.gz \
+ARG RONDB_AMD_TARBALL_URI
+ARG RONDB_ARM_TARBALL_URI
+
+RUN case "$TARGETARCH" in \
+        amd64) TARBALL_URL=$RONDB_AMD_TARBALL_URI;; \
+        arm64) TARBALL_URL=$RONDB_ARM_TARBALL_URI;; \
+    esac \
+    && wget $TARBALL_URL -O ./temp_tarball.tar.gz \
     && tar xfz ./temp_tarball.tar.gz -C $RONDB_BIN_DIR --strip-components=1 \
     && rm ./temp_tarball.tar.gz \
     && chown mysql:mysql -R $RONDB_BIN_DIR
