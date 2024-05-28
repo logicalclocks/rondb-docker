@@ -381,7 +381,7 @@ else
         --tag $RONDB_IMAGE_NAME \
         --build-arg RONDB_VERSION=$RONDB_VERSION \
         --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
-        --build-arg RONDB_AMD_TARBALL_URI=$RONDB_TARBALL_URI \
+        --build-arg RONDB_X86_TARBALL_URI=$RONDB_TARBALL_URI \
         --build-arg RONDB_ARM_TARBALL_URI=$RONDB_TARBALL_URI
 fi
 

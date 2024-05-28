@@ -105,7 +105,7 @@ docker buildx build . --platform=linux/arm64,linux/amd64 \
   -t rondb-standalone:21.04.16 \
   --build-arg RONDB_VERSION=21.04.16 \
   --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \  # alternatively "local"
-  --build-arg RONDB_AMD_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.28-x86_64.tar.gz \ # alternatively a local file path
+  --build-arg RONDB_X86_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.28-x86_64.tar.gz \ # alternatively a local file path
   --build-arg RONDB_ARM_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.35-arm64_v8.tar.gz 
 
 # Explore image

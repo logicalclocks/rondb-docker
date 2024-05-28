@@ -54,11 +54,11 @@ RUN mkdir -p $RONDB_BIN_DIR
 
 # Get RonDB tarball from local path & unpack it
 FROM cloud_preparation as local_tarball
-ARG RONDB_AMD_TARBALL_URI
+ARG RONDB_X86_TARBALL_URI
 ARG RONDB_ARM_TARBALL_URI
 
 RUN case "$TARGETARCH" in \
-        amd64) echo "export TARBALL_PATH=$RONDB_AMD_TARBALL_URI" >> /env.sh;; \
+        amd64) echo "export TARBALL_PATH=$RONDB_X86_TARBALL_URI" >> /env.sh;; \
         arm64) echo "export TARBALL_PATH=$RONDB_ARM_TARBALL_URI" >> /env.sh;; \
     esac
 
@@ -69,11 +69,11 @@ RUN --mount=type=bind,source=.,target=/context \
 
 # Get RonDB tarball from remote url & unpack it
 FROM cloud_preparation as remote_tarball
-ARG RONDB_AMD_TARBALL_URI
+ARG RONDB_X86_TARBALL_URI
 ARG RONDB_ARM_TARBALL_URI
 
 RUN case "$TARGETARCH" in \
-        amd64) TARBALL_URL=$RONDB_AMD_TARBALL_URI;; \
+        amd64) TARBALL_URL=$RONDB_X86_TARBALL_URI;; \
         arm64) TARBALL_URL=$RONDB_ARM_TARBALL_URI;; \
     esac \
     && wget $TARBALL_URL -O ./temp_tarball.tar.gz \
