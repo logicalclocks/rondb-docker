@@ -13,7 +13,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  BASE_DEPLOY_URL: https://repo.hops.works/master
+  BASE_DOWNLOAD_URL: https://repo.hops.works/master
   ARM_IMAGE_NAME: rondb-standalone-arm64
   X86_IMAGE_NAME: rondb-standalone-amd64
   
@@ -59,7 +59,7 @@ jobs:
       - name: Build and run Docker Compose cluster with benchmarking for RONDB_VERSION_LTS
         run: |
           ./run.sh -lv \
-            --rondb-tarball-url $BASE_DEPLOY_URL/$LTS_X86_TARBALL_NAME \
+            --rondb-tarball-url $BASE_DOWNLOAD_URL/$LTS_X86_TARBALL_NAME \
             --rondb-version $RONDB_VERSION_LTS \
             --size mini \
             --run-benchmark sysbench_single \
@@ -126,7 +126,7 @@ jobs:
               --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_X86_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_X86_TARBALL_NAME
+              --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/$STABLE_X86_TARBALL_NAME
 
       - name: Push X86 images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
@@ -186,7 +186,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_LTS \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DEPLOY_URL/$LTS_ARM_TARBALL_NAME \
+              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DOWNLOAD_URL/$LTS_ARM_TARBALL_NAME \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
@@ -204,7 +204,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_ARM_TARBALL_NAME \
+              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DOWNLOAD_URL/$STABLE_ARM_TARBALL_NAME \
               --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
 
