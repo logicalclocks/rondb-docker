@@ -26,8 +26,33 @@ env:
   STABLE_ARM_TARBALL_NAME: rondb-22.10.3-linux-glibc2.28-arm64_v8.tar.gz
 
 jobs:
+  check-git:
+    runs-on: ubuntu-latest
+    outputs:
+      is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if current branch is the highest release branch
+        if: github.repository == 'logicalclocks/rondb-docker'
+        id: is_highest_release
+        run: |
+          ALL_RELEASES=$(git branch -r | grep 'origin/release-' | sed 's|origin/||')
+          HIGHEST_RELEASE=$(echo "$ALL_RELEASES" | sort -V | tail -n 1)
+          echo "Highest release branch is $HIGHEST_RELEASE"
+
+          if [ "${GITHUB_REF_NAME}" = "$HIGHEST_RELEASE" ]; then
+            echo "Current branch is the highest release branch."
+            echo "is_highest=true" >> $GITHUB_ENV
+          else
+            echo "is_highest=false" >> $GITHUB_ENV
+          fi
+
   integration-test-and-package:
     runs-on: ubuntu-latest
+    needs: [check-git]
     steps:
       - uses: actions/checkout@v4
 
@@ -103,34 +128,33 @@ jobs:
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=$BASE_DEPLOY_URL/$STABLE_X86_TARBALL_NAME
 
-      # In the main branch, we work with "<version>-SNAPSHOT", which might as well be called "latest"
-      - name: Push X86 *latest* images to Dockerhub
-        if: github.repository == 'logicalclocks/rondb-docker' && github.ref_name == 'main'
+      - name: Push X86 images to Dockerhub
+        if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+
+      # Our "latest" branch points to the latest *release* branch.
+      - name: Push X86 *latest* images to Dockerhub
+        if: github.repository == 'logicalclocks/rondb-docker' && needs.check-git.outputs.is_highest_release == 'true'
+        run: |
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:latest
-          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker push hopsworks/$X86_IMAGE_NAME:latest
 
-      - name: Push X86 *release* images to Dockerhub
-        if: github.repository == 'logicalclocks/rondb-docker' && startsWith(github.ref_name, 'release-')
-        run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
-          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
-          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
-          docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
-
   build-and-push-ARM64:
     runs-on: ubuntu-latest
     if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
+    needs: [check-git]
+    env:
+      is_highest_release: ${{ needs.check-git.outputs.is_highest_release == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -153,7 +177,7 @@ jobs:
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           TAGS="hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION"
-          if [[ "${{ github.ref_name == 'main' }}" == "true" ]]; then
+          if [[ "$is_highest_release" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest"
           fi
           docker buildx build . \
@@ -170,7 +194,7 @@ jobs:
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           TAGS="--tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION"
-          if [[ "${{ github.ref_name == 'main' }}" == "true" ]]; then
+          if [[ "$is_highest_release" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest"
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
           fi
@@ -187,7 +211,9 @@ jobs:
   build-and-push-cross-platform-image:
     runs-on: ubuntu-latest
     if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
-    needs: [integration-test-and-package, build-and-push-ARM64]
+    needs: [check-git, integration-test-and-package, build-and-push-ARM64]
+    env:
+      is_highest_release: ${{ needs.check-git.outputs.is_highest_release == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -204,9 +230,6 @@ jobs:
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
 
-          # Using $VERSION will create weird `-SNAPSHOT` tags, when in main, but we need
-          # those Dockerhub images in order to run the main branch.
-
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-$VERSION \
             hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
@@ -214,7 +237,7 @@ jobs:
             hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
         
-          if [[ "${{ github.ref_name == 'main' }}" == "true" ]]; then
+          if [[ "$is_highest_release" == "true" ]]; then
             docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-latest \
               hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest \
               hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest
