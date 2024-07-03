@@ -49,8 +49,8 @@ on:
 
 env:
   BASE_DOWNLOAD_URL: https://repo.hops.works/master
-  ARM_IMAGE_NAME: rondb-standalone-arm64
-  X86_IMAGE_NAME: rondb-standalone-amd64
+  ARM_IMAGE_NAME: rondb-arm64
+  X86_IMAGE_NAME: rondb-amd64
 
 jobs:
   check-git:
@@ -161,7 +161,7 @@ jobs:
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           docker buildx build . \
-              --tag rondb-standalone:${{ inputs.rondb_version }}-$VERSION \
+              --tag rondb:${{ inputs.rondb_version }}-$VERSION \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_x86_tarball_name }}
@@ -172,7 +172,7 @@ jobs:
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
 
-          docker tag rondb-standalone:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
       - name: Push with tag `<rondb-version>-latest`
@@ -182,7 +182,7 @@ jobs:
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest
 
-          docker tag rondb-standalone:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
       - name: Push with tag `latest`
@@ -191,7 +191,7 @@ jobs:
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:latest
 
-          docker tag rondb-standalone:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
   build-push-arm64:
@@ -234,8 +234,8 @@ jobs:
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_ARM_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_arm64_tarball_name }} \
-              --cache-to type=registry,ref=hopsworks/rondb-standalone-cache,mode=max \
-              --cache-from type=registry,ref=hopsworks/rondb-standalone-cache,mode=max
+              --cache-to type=registry,ref=hopsworks/rondb-cache,mode=max \
+              --cache-from type=registry,ref=hopsworks/rondb-cache,mode=max
 
   make-multi-platform-image:
     runs-on: ubuntu-latest
@@ -257,17 +257,17 @@ jobs:
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
-          docker buildx imagetools create -t hopsworks/rondb-standalone:${{ inputs.rondb_version }}-$VERSION \
+          docker buildx imagetools create -t hopsworks/rondb:${{ inputs.rondb_version }}-$VERSION \
             hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
         
           if [[ "${{ needs.check-git.outputs.is_highest_release }}" == "true" ]]; then
-            docker buildx imagetools create -t hopsworks/rondb-standalone:${{ inputs.rondb_version }}-latest \
+            docker buildx imagetools create -t hopsworks/rondb:${{ inputs.rondb_version }}-latest \
               hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
               hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest
               
               if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
-                docker buildx imagetools create -t hopsworks/rondb-standalone:latest \
+                docker buildx imagetools create -t hopsworks/rondb:latest \
                   hopsworks/$X86_IMAGE_NAME:latest \
                   hopsworks/$ARM_IMAGE_NAME:latest
               fi

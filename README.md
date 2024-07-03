@@ -23,7 +23,7 @@ cd <path-to-repo>
 ./run.sh
 ```
 
-This will create a default RonDB cluster using the Docker image [hopsworks/rondb-standalone](https://hub.docker.com/repository/docker/hopsworks/rondb-standalone/general).
+This will create a default RonDB cluster using the Docker image [hopsworks/rondb](https://hub.docker.com/repository/docker/hopsworks/rondb/general).
 
 To run the optimal cluster for your machine, `run.sh` can be run with 5 different user profiles:
 
@@ -102,14 +102,14 @@ Commands to run:
 
 # Build multi-platform image
 docker buildx build . --platform=linux/arm64,linux/amd64 \
-  -t rondb-standalone:21.04.16 \
+  -t rondb:21.04.16 \
   --build-arg RONDB_VERSION=21.04.16 \
   --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \  # alternatively "local"
   --build-arg RONDB_X86_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.28-x86_64.tar.gz \ # alternatively a local file path
   --build-arg RONDB_ARM_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.35-arm64_v8.tar.gz 
 
 # Explore image
-docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.16
+docker run --rm -it --entrypoint=/bin/bash rondb:21.04.16
 ```
 
 Example commands to run with running docker-compose cluster:
@@ -166,7 +166,7 @@ If you use the `-lv` flag, the results of the benchmarks are mounted into the lo
 
 ## ***New***: Managed RonDB
 
-Apart from using/building the Docker image `rondb-standalone`, RonDB can also be run as a managed database, using the Docker image `hopsworks/rondb-managed`. This means that the cluster becomes dynamic - one can add nodes, perform rolling software upgrades, do backups and even restore from backups. See the directory [managed_rondb](managed_rondb) for more.
+Apart from using/building the Docker image `rondb`, RonDB can also be run as a managed database, using the Docker image `hopsworks/rondb-managed`. This means that the cluster becomes dynamic - one can add nodes, perform rolling software upgrades, do backups and even restore from backups. See the directory [managed_rondb](managed_rondb) for more.
 
 ## Preliminary Notes for YCSB benchmarking
 

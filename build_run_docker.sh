@@ -376,7 +376,7 @@ BENCH_DIR="/home/mysql/benchmarks"
 #######################
 #######################
 
-RONDB_IMAGE_NAME="rondb-standalone:$RONDB_VERSION-$VERSION"
+RONDB_IMAGE_NAME="rondb:$RONDB_VERSION-$VERSION"
 if [ ! -n "$RONDB_TARBALL_PATH" ] && [ ! -n "$RONDB_TARBALL_URL" ]; then
     RONDB_IMAGE_NAME="hopsworks/$RONDB_IMAGE_NAME"
     docker pull $RONDB_IMAGE_NAME
