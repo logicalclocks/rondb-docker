@@ -165,7 +165,7 @@ jobs:
           docker push $IMAGE_NAME
 
       - name: Push with "latest" tag (also omit rondb version)
-        if: needs.check-git.outputs.is_highest_release == 'true' && inputs.is_latest_rondb_release == 'true'
+        if: needs.check-git.outputs.is_highest_release == 'true' && ${{ inputs.is_latest_rondb_release == 'true' }}
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:latest
