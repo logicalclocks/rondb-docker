@@ -53,12 +53,6 @@ env:
 jobs:
   check-git:
     runs-on: ubuntu-latest
-    # This will block all other jobs from running due to "needs"
-    if: |
-      ${{ !inputs.skip_test || (
-          github.repository == 'logicalclocks/rondb-docker' && 
-          (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
-      )}}
     outputs:
       is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
     steps:
@@ -77,12 +71,18 @@ jobs:
             echo "Current branch is the highest release branch."
             echo "is_highest=true" >> $GITHUB_ENV
           else
+            echo "Current branch is not the highest release branch."
             echo "is_highest=false" >> $GITHUB_ENV
           fi
 
   build-test-push-x86:
     runs-on: ubuntu-latest
     needs: [check-git]
+    if: |
+      ${{ !inputs.skip_test || (
+          github.repository == 'logicalclocks/rondb-docker' && 
+          (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
+      )}}
     steps:
       - uses: actions/checkout@v4
 
