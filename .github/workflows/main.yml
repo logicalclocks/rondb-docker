@@ -1,4 +1,4 @@
-name: Building Image, Running Benchmarks and Deploying to Dockerhub
+name: Matrix to build, test & push
 on:
   # Launch on manual trigger
   workflow_dispatch:
