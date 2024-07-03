@@ -152,7 +152,7 @@ jobs:
               --tag rondb-standalone:${{ inputs.rondb_version }}-$VERSION \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/$STABLE_X86_TARBALL_NAME
+              --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_x86_tarball_name }}
 
   push-x86:
     runs-on: ubuntu-latest
