@@ -78,11 +78,7 @@ jobs:
   build-test-push-x86:
     runs-on: ubuntu-latest
     needs: [check-git]
-    if: |
-      ${{ !inputs.skip_test || (
-          github.repository == 'logicalclocks/rondb-docker' && 
-          (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
-      )}}
+    if: ${{ !inputs.skip_test || (github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main'))}}
     steps:
       - uses: actions/checkout@v4
 
