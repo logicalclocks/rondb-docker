@@ -51,7 +51,7 @@ jobs:
 
   integration-test-x86:
     runs-on: ubuntu-latest
-    if: !inputs.skip_test
+    if: ${{ inputs.skip_test == 'false' }}
     needs: [check-git]
     steps:
       - uses: actions/checkout@v4
@@ -113,7 +113,7 @@ jobs:
 
   build-x86:
     runs-on: ubuntu-latest
-    if: inputs.skip_test == 'true'
+    if: ${{ inputs.skip_test == 'true' }}
     steps:
       - uses: actions/checkout@v4
 
