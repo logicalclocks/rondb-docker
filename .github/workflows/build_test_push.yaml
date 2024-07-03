@@ -1,4 +1,4 @@
-name: Build, test and push multi-platform Docker image
+name: Build, test & push executor
 
 on:
   workflow_call:
@@ -154,6 +154,7 @@ jobs:
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_x86_tarball_name }}
 
+  # TODO: This doesn't have access to the images of the previous jobs
   push-x86:
     runs-on: ubuntu-latest
     # It's always EITHER one or the other that will be run
