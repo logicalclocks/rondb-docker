@@ -51,7 +51,7 @@ jobs:
 
   integration-test-x86:
     runs-on: ubuntu-latest
-    if: inputs.skip_test == 'false'
+    if: !inputs.skip_test
     needs: [check-git]
     steps:
       - uses: actions/checkout@v4
