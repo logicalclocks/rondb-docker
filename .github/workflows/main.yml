@@ -20,15 +20,15 @@ jobs:
       matrix:
         info:
           - rondb_version: 21.04.16
-            is_latest_rondb_release: 'false'
+            is_latest_rondb_release: false
             glibc_version_x86: 2.17
             glibc_version_arm64: 2.35
-            skip_test: 'true'
+            skip_test: true
           - rondb_version: 22.10.3
-            is_latest_rondb_release: 'true'
+            is_latest_rondb_release: true
             glibc_version_x86: 2.28
             glibc_version_arm64: 2.28
-            skip_test: 'false'
+            skip_test: false
     with:
       rondb_version: ${{ matrix.info.rondb_version }}
       is_latest_rondb_release: ${{ matrix.info.is_latest_rondb_release }}
