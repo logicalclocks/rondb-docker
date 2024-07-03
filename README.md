@@ -80,7 +80,7 @@ Commands to run:
 ```bash
 # Run docker-compose cluster with image from DockerHub
 ./build_run_docker.sh \
-  --rondb-version 22.10.1 \
+  --rondb-version 22.10.4 \
   --num-mgm-nodes 1 \
   --node-groups 1 \
   --replication-factor 2 \
@@ -154,7 +154,7 @@ The Docker images come with a set of benchmarks pre-installed. To run any of the
 
 # Running with a custom size; The benchmarks are run on the API containers and make queries towards the mysqld containers; this means that both types are needed.
 ./build_run_docker.sh \
-  -v 22.10.1 -m 1 -g 1 -r 2 -my 2 -bn 1 \
+  -v 22.10.4 -m 1 -g 1 -r 2 -my 2 -bn 1 \
   --run-benchmark <sysbench_single, sysbench_multi, dbt2_single>
 ```
 
