@@ -15,11 +15,12 @@ on:
         type: string
       is_latest_rondb_release:
         required: true
-        description: "Used to decide whether the Docker image will be using the 'latest' tag without a version number"
+        description: "Is latest stable RonDB release"
         type: boolean
         default: false
       skip_test:
         required: true
+        description: "Don't run a docker-compose cluster with benchmarking"
         type: boolean
         default: false
   # Inputs here have to be duplicated from workflow_call...
@@ -37,11 +38,12 @@ on:
         type: string
       is_latest_rondb_release:
         required: true
-        description: "Used to decide whether the Docker image will be using the 'latest' tag without a version number"
+        description: "Is latest stable RonDB release"
         type: boolean
         default: false
       skip_test:
         required: true
+        description: "Don't run a docker-compose cluster with benchmarking"
         type: boolean
         default: false
 
