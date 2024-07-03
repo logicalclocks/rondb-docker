@@ -1,11 +1,11 @@
-RonDB-Docker version: 0.3-SNAPSHOT
+RonDB-Docker version: dev
 
 #################
 Parsed arguments:
 #################
 
-RonDB version                 = 21.04.13
-RonDB tarball path            = ./rondb-21.04.13-linux-glibc2.35-arm64_v8.tar.gz
+RonDB version                 = 22.10.4
+RonDB tarball path            = ./rondb-22.10.4-linux-glibc2.28-arm64_v8.tar.gz
 RonDB tarball url             = 
 Number of management nodes    = 1
 Node groups                   = 1
@@ -15,7 +15,8 @@ Number of REST API nodes      = 1
 Number of benchmarking nodes  = 1
 Run benchmark                 = sysbench_multi
 Volume type docker/local      = local
+SQL Init scripts directory    = <path-to-repo>/resources/sql_init_scripts
 Save sample files             = 1
-Run detached                  = 
+Run detached                  = -d
 Run with RonDB size           = small
-
+User suffix                   = 
