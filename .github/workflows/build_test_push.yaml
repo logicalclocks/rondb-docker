@@ -55,6 +55,12 @@ env:
 jobs:
   check-git:
     runs-on: ubuntu-latest
+    # This will block all other jobs from running due to "needs"
+    if: |
+      ${{ inputs.skip_test == 'false' || (
+          github.repository == 'logicalclocks/rondb-docker' && 
+          (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
+      )}}
     outputs:
       is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
     steps:
