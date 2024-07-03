@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-test-push:
-    uses: ./.github/workflows/reusable/build_test_push.yaml
+    uses: ./.github/workflows/build_test_push.yaml
     strategy:
       fail-fast: true
       matrix:
