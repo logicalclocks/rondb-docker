@@ -15,10 +15,12 @@ on:
       is_latest_rondb_release:
         required: true
         description: "Used to decide whether the Docker image will be using the 'latest' tag without a version number"
-        type: boolean
+        type: string
+        default: 'false'
       skip_test:
         required: true
-        type: boolean
+        type: string
+        default: 'false'
 
 env:
   BASE_DOWNLOAD_URL: https://repo.hops.works/master
