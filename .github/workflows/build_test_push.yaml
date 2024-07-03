@@ -2,6 +2,31 @@ name: Build, test and push multi-platform Docker image
 
 on:
   workflow_call:
+    # WARNING:
+    #   1. Duplicate everything here into workflow_dispatch
+    #   2. Type "boolean" is not supported
+    inputs:
+      rondb_version:
+        required: true
+        type: string
+      rondb_x86_tarball_name:
+        required: true
+        type: string
+      rondb_arm64_tarball_name:
+        required: true
+        type: string
+      is_latest_rondb_release:
+        required: true
+        description: "Used to decide whether the Docker image will be using the 'latest' tag without a version number"
+        type: string
+        default: 'false'
+      skip_test:
+        required: true
+        type: string
+        default: 'false'
+  # Inputs here have to be duplicated from workflow_call...
+  # https://github.com/orgs/community/discussions/39357
+  workflow_dispatch:
     inputs:
       rondb_version:
         required: true
