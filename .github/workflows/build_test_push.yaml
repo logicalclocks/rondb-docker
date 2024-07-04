@@ -58,11 +58,6 @@ on:
         - https://repo.hops.works/master
         - https://repo.hops.works/master/rondb-dev
 
-env:
-  BASE_DOWNLOAD_URL: https://repo.hops.works/master
-  ARM_IMAGE_NAME: rondb-arm64
-  X86_IMAGE_NAME: rondb-amd64
-
 jobs:
   payload-validation:
     runs-on: ubuntu-latest
@@ -78,11 +73,14 @@ jobs:
             exit 1
           fi
 
-  check-git:
+  process-info:
     runs-on: ubuntu-latest
     needs: [payload-validation]
     outputs:
       is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
+      arm_image_name: ${{ steps.image_name.outputs.arm_image_name }}
+      x86_image_name: ${{ steps.image_name.outputs.x86_image_name }}
+      multi_image_name: ${{ steps.image_name.outputs.multi_image_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -103,9 +101,24 @@ jobs:
             echo "is_highest=false" >> $GITHUB_ENV
           fi
 
+      # When using tarballs from rondb-dev, we'll use the image name "rondb-dev"
+      - name: Get image name
+        if: github.repository == 'logicalclocks/rondb-docker'
+        id: image_name
+        run: |
+          if [ "${{ inputs.base_download_url }}" == "https://repo.hops.works/master" ]; then
+            echo "arm_image_name=rondb-arm64" >> $GITHUB_ENV
+            echo "x86_image_name=rondb-amd64" >> $GITHUB_ENV
+            echo "multi_image_name=rondb" >> $GITHUB_ENV
+          else
+            echo "arm_image_name=rondb-dev-arm64" >> $GITHUB_ENV
+            echo "x86_image_name=rondb-dev-amd64" >> $GITHUB_ENV
+            echo "multi_image_name=rondb-dev" >> $GITHUB_ENV
+          fi
+
   build-test-push-x86:
     runs-on: ubuntu-latest
-    needs: [check-git]
+    needs: [process-info]
     if: ${{ !inputs.skip_test || (github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main'))}}
     steps:
       - uses: actions/checkout@v4
@@ -186,8 +199,10 @@ jobs:
         if: ${{ inputs.skip_test && github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')}}
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           docker buildx build . \
-              --tag rondb:${{ inputs.rondb_version }}-$VERSION \
+              --tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }}
@@ -196,34 +211,46 @@ jobs:
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
+
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
 
-          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
       - name: Push with tag `<rondb-version>-latest`
         # Our "latest" branch points to the latest *release* branch.
-        if: needs.check-git.outputs.is_highest_release == 'true'
+        if: needs.process-info.outputs.is_highest_release == 'true'
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
+
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest
 
-          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
       - name: Push with tag `latest`
-        if: ${{ needs.check-git.outputs.is_highest_release && inputs.is_latest_rondb_release }}
+        if: ${{ needs.process-info.outputs.is_highest_release && inputs.is_latest_rondb_release }}
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
+
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+          
           IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:latest
 
-          docker tag rondb:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
+          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
           docker push $IMAGE_NAME
 
   build-push-arm64:
     runs-on: ubuntu-latest
     if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
-    needs: [check-git]
+    needs: [process-info]
     steps:
       - uses: actions/checkout@v4
 
@@ -244,9 +271,12 @@ jobs:
       # all types of benchmarking to the tests.
       - name: Build and push ARM64 image
         run: |
+          ARM_IMAGE_NAME="${{ needs.process-info.outputs.arm_image_name }}"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           TAGS="--tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION"
-          if [[ "${{ needs.check-git.outputs.is_highest_release }}" == "true" ]]; then
+          if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest"
             if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
               TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
@@ -266,7 +296,7 @@ jobs:
   make-multi-platform-image:
     runs-on: ubuntu-latest
     if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
-    needs: [check-git, build-test-push-x86, build-push-arm64]
+    needs: [process-info, build-test-push-x86, build-push-arm64]
     steps:
       - uses: actions/checkout@v4
 
@@ -290,21 +320,25 @@ jobs:
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
+          ARM_IMAGE_NAME="${{ needs.process-info.outputs.arm_image_name }}"
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           for repo_url in docker.io docker.hops.works; do
 
             echo "Creating and pushing multi-platform image for $repo_url"
 
-            docker buildx imagetools create -t $repo_url/hopsworks/rondb:${{ inputs.rondb_version }}-$VERSION \
+            docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
 
-            if [[ "${{ needs.check-git.outputs.is_highest_release }}" == "true" ]]; then
-              docker buildx imagetools create -t $repo_url/hopsworks/rondb:${{ inputs.rondb_version }}-latest \
+            if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" ]]; then
+              docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
                 hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
                 hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest
 
                 if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
-                  docker buildx imagetools create -t $repo_url/hopsworks/rondb:latest \
+                  docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:latest \
                     hopsworks/$X86_IMAGE_NAME:latest \
                     hopsworks/$ARM_IMAGE_NAME:latest
                 fi
