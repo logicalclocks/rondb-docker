@@ -68,6 +68,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
+          if [[ "${{ inputs.rondb_x86_tarball_name }}" == */* || "${{ inputs.rondb_arm64_tarball_name }}" == */* ]]; then
+            echo "The tarball names contain '/'s, which are not allowed."
+            exit 1
+          fi
+
           if [ "${{ inputs.is_latest_rondb_release }}" = "true" ] && [ "${{ inputs.base_download_url }}" != "https://repo.hops.works/master" ]; then
             echo "is_latest_rondb_release can only be true if base_download_url is set to https://repo.hops.works/master"
             exit 1
