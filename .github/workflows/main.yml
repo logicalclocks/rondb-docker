@@ -24,17 +24,16 @@ jobs:
             glibc_version_x86: 2.17
             glibc_version_arm64: 2.35
             skip_test: true
-            base_download_url: https://repo.hops.works/master
           - rondb_version: 22.10.4
             is_latest_rondb_release: true
             glibc_version_x86: 2.28
             glibc_version_arm64: 2.28
             skip_test: false
-            base_download_url: https://repo.hops.works/master
     with:
       rondb_version: ${{ matrix.info.rondb_version }}
       is_latest_rondb_release: ${{ matrix.info.is_latest_rondb_release }}
       rondb_x86_tarball_name: rondb-${{ matrix.info.rondb_version }}-linux-glibc${{ matrix.info.glibc_version_x86 }}-x86_64.tar.gz
       rondb_arm64_tarball_name: rondb-${{ matrix.info.rondb_version }}-linux-glibc${{ matrix.info.glibc_version_arm64 }}-arm64_v8.tar.gz
       skip_test: ${{ matrix.info.skip_test }}
+      base_download_url: "https://repo.hops.works/master"
     secrets: inherit
