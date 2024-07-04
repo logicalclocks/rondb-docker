@@ -53,27 +53,6 @@ env:
   X86_IMAGE_NAME: rondb-amd64
 
 jobs:
-
-  check-logins:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Login to Dockerhub
-        uses: docker/login-action@v3
-        with:
-          username: hopsworks
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to Nexus
-        uses: docker/login-action@v3
-        with:
-          registry: docker.hops.works
-          username: ${{ secrets.NEXUS_USER }}
-          password: ${{ secrets.NEXUS_PASSWORD }}
-
   check-git:
     runs-on: ubuntu-latest
     outputs:
