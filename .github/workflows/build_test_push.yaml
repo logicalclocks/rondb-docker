@@ -139,11 +139,11 @@ jobs:
       - name: Build and run Docker Compose cluster with benchmarking
         if: ${{ !inputs.skip_test }}
         run: |
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
 
           ./run.sh -lv \
             --rondb-version ${{ inputs.rondb_version }} \
-            --rondb-image-name $MULTI_IMAGE_NAME \
+            --rondb-image-name $X86_IMAGE_NAME \
             --rondb-tarball-url ${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }} \
             --size mini \
             --run-benchmark sysbench_single \
@@ -208,10 +208,10 @@ jobs:
         if: ${{ inputs.skip_test && github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')}}
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
 
           docker buildx build . \
-              --tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
+              --tag $X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }}
@@ -222,12 +222,12 @@ jobs:
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
           X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+          TAG=${{ inputs.rondb_version }}-$VERSION
 
-          IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
+          NEW_IMAGE_ID=hopsworks/$X86_IMAGE_NAME:$TAG
 
-          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
-          docker push $IMAGE_NAME
+          docker tag $X86_IMAGE_NAME:$TAG $NEW_IMAGE_ID
+          docker push $NEW_IMAGE_ID
 
       - name: Push with tag `<rondb-version>-latest`
         # Our "latest" branch points to the latest *release* branch.
@@ -236,25 +236,25 @@ jobs:
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
           X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+          TAG=${{ inputs.rondb_version }}-$VERSION
 
-          IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest
+          NEW_IMAGE_ID=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest
 
-          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
-          docker push $IMAGE_NAME
+          docker tag $X86_IMAGE_NAME:$TAG $NEW_IMAGE_ID
+          docker push $NEW_IMAGE_ID
 
       - name: Push with tag `latest`
         if: ${{ needs.process-info.outputs.is_highest_release && inputs.is_latest_rondb_release }}
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
-          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
-          
-          IMAGE_NAME=hopsworks/$X86_IMAGE_NAME:latest
+          X86_IMAGE_NAME="${{ needs.process-info.outputs.x86_image_name }}"          
+          TAG=${{ inputs.rondb_version }}-$VERSION
 
-          docker tag $MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION $IMAGE_NAME
-          docker push $IMAGE_NAME
+          NEW_IMAGE_ID=hopsworks/$X86_IMAGE_NAME:latest
+
+          docker tag $X86_IMAGE_NAME:$TAG $NEW_IMAGE_ID
+          docker push $NEW_IMAGE_ID
 
   build-push-arm64:
     runs-on: ubuntu-latest
@@ -280,10 +280,9 @@ jobs:
       # all types of benchmarking to the tests.
       - name: Build and push ARM64 image
         run: |
-          ARM_IMAGE_NAME="${{ needs.process-info.outputs.arm_image_name }}"
-          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
-
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
+          ARM_IMAGE_NAME="${{ needs.process-info.outputs.arm_image_name }}"
+
           TAGS="--tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION"
           if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest"
