@@ -101,10 +101,10 @@ jobs:
           echo "Highest release branch is $HIGHEST_RELEASE"
           if [ "${GITHUB_REF_NAME}" = "$HIGHEST_RELEASE" ]; then
             echo "Current branch is the highest release branch."
-            echo "is_highest=true" >> $GITHUB_ENV
+            echo "is_highest=true" >> $GITHUB_OUTPUT
           else
             echo "Current branch is not the highest release branch."
-            echo "is_highest=false" >> $GITHUB_ENV
+            echo "is_highest=false" >> $GITHUB_OUTPUT
           fi
 
       # When using tarballs from rondb-dev, we'll use the image name "rondb-dev"
@@ -113,13 +113,13 @@ jobs:
         id: image_names
         run: |
           if [ "${{ inputs.base_download_url }}" == "https://repo.hops.works/master" ]; then
-            echo "arm=rondb-arm64" >> $GITHUB_ENV
-            echo "x86=rondb-amd64" >> $GITHUB_ENV
-            echo "multi=rondb" >> $GITHUB_ENV
+            echo "arm=rondb-arm64" >> $GITHUB_OUTPUT
+            echo "x86=rondb-amd64" >> $GITHUB_OUTPUT
+            echo "multi=rondb" >> $GITHUB_OUTPUT
           else
-            echo "arm=rondb-dev-arm64" >> $GITHUB_ENV
-            echo "x86=rondb-dev-amd64" >> $GITHUB_ENV
-            echo "multi=rondb-dev" >> $GITHUB_ENV
+            echo "arm=rondb-dev-arm64" >> $GITHUB_OUTPUT
+            echo "x86=rondb-dev-amd64" >> $GITHUB_OUTPUT
+            echo "multi=rondb-dev" >> $GITHUB_OUTPUT
           fi
 
   build-test-push-x86:
