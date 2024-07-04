@@ -35,4 +35,5 @@ jobs:
       rondb_x86_tarball_name: rondb-${{ matrix.info.rondb_version }}-linux-glibc${{ matrix.info.glibc_version_x86 }}-x86_64.tar.gz
       rondb_arm64_tarball_name: rondb-${{ matrix.info.rondb_version }}-linux-glibc${{ matrix.info.glibc_version_arm64 }}-arm64_v8.tar.gz
       skip_test: ${{ matrix.info.skip_test }}
+      base_download_url: "https://repo.hops.works/master"
     secrets: inherit
