@@ -292,6 +292,8 @@ jobs:
 
           for repo_url in docker.io docker.hops.works; do
 
+            echo "Creating and pushing multi-platform image for $repo_url"
+
             docker buildx imagetools create -t $repo_url/hopsworks/rondb:${{ inputs.rondb_version }}-$VERSION \
               hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
