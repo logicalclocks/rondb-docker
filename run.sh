@@ -22,6 +22,7 @@
 
 RONDB_SIZE=small
 RONDB_VERSION=22.10.4
+RONDB_IMAGE_NAME=rondb
 REPLICATION_FACTOR=2
 RONDB_TARBALL_PATH=
 RONDB_TARBALL_URL=
@@ -36,6 +37,8 @@ Usage: $0
     [-h     --help                                                  ]
     [-v     --rondb-version                                 <string>
                 Default: $RONDB_VERSION                             ]
+    [-in    --rondb-image-name                              <string>
+                Default: $RONDB_IMAGE_NAME                          ]
     [-tp    --rondb-tarball-path                            <string>
                 Build Dockerfile with a local tarball           
                 Default: pull image from Dockerhub                  ]
@@ -79,6 +82,11 @@ while [[ $# -gt 0 ]]; do
         ;;
     -v | --rondb-version)
         RONDB_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -in | --rondb-image-name)
+        RONDB_IMAGE_NAME="$2"
         shift # past argument
         shift # past value
         ;;
@@ -164,6 +172,7 @@ fi
 
 EXEC_CMD="./build_run_docker.sh"
 EXEC_CMD="$EXEC_CMD --rondb-version $RONDB_VERSION"
+EXEC_CMD="$EXEC_CMD --rondb-image-name $RONDB_IMAGE_NAME"
 
 if [ -n "$RONDB_TARBALL_PATH" ]; then
     EXEC_CMD="$EXEC_CMD --rondb-tarball-path $RONDB_TARBALL_PATH"

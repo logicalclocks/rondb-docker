@@ -139,9 +139,12 @@ jobs:
       - name: Build and run Docker Compose cluster with benchmarking
         if: ${{ !inputs.skip_test }}
         run: |
+          MULTI_IMAGE_NAME="${{ needs.process-info.outputs.multi_image_name }}"
+
           ./run.sh -lv \
-            --rondb-tarball-url ${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }} \
             --rondb-version ${{ inputs.rondb_version }} \
+            --rondb-image-name $MULTI_IMAGE_NAME \
+            --rondb-tarball-url ${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }} \
             --size mini \
             --run-benchmark sysbench_single \
             --detached

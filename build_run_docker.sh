@@ -49,6 +49,7 @@ SAVE_SAMPLE_FILES=
 DETACHED=
 RONDB_SIZE=small
 SQL_INIT_SCRIPT_CLI_DIR=$SCRIPT_DIR/resources/sql_init_scripts
+RONDB_IMAGE_NAME=rondb
 RONDB_VERSION=22.10.4
 
 function print_usage() {
@@ -59,6 +60,8 @@ Usage: $0
     [-h     --help                                              ]
     [-v     --rondb-version                             <string>
                 Default: $RONDB_VERSION                         ]
+    [-in    --rondb-image-name                          <string>
+                Default: $RONDB_IMAGE_NAME                      ]
     [-tp    --rondb-tarball-path                        <string>
                 Build Dockerfile with a local tarball           
                 Default: pull image from Dockerhub              ]
@@ -119,6 +122,11 @@ while [[ $# -gt 0 ]]; do
         ;;
     -v | --rondb-version)
         RONDB_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -in | --rondb-image-name)
+        RONDB_IMAGE_NAME="$2"
         shift # past argument
         shift # past value
         ;;
@@ -209,6 +217,7 @@ print-parsed-arguments() {
     echo "#################"
     echo
     echo "RonDB version                 = ${RONDB_VERSION}"
+    echo "RonDB image name              = ${RONDB_IMAGE_NAME}"
     echo "RonDB tarball path            = ${RONDB_TARBALL_PATH}"
     echo "RonDB tarball url             = ${RONDB_TARBALL_URL}"
     echo "Number of management nodes    = ${NUM_MGM_NODES}"
@@ -376,10 +385,10 @@ BENCH_DIR="/home/mysql/benchmarks"
 #######################
 #######################
 
-RONDB_IMAGE_NAME="rondb:$RONDB_VERSION-$VERSION"
+RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION-$VERSION"
 if [ ! -n "$RONDB_TARBALL_PATH" ] && [ ! -n "$RONDB_TARBALL_URL" ]; then
-    RONDB_IMAGE_NAME="hopsworks/$RONDB_IMAGE_NAME"
-    docker pull $RONDB_IMAGE_NAME
+    RONDB_IMAGE_ID="hopsworks/$RONDB_IMAGE_ID"
+    docker pull $RONDB_IMAGE_ID
 else
     echo "Building RonDB Docker image for local platform"
 
@@ -392,7 +401,7 @@ else
 
     # We're not using this for cross-platform builds, so can use same argument twice
     docker buildx build . \
-        --tag $RONDB_IMAGE_NAME \
+        --tag $RONDB_IMAGE_ID \
         --build-arg RONDB_VERSION=$RONDB_VERSION \
         --build-arg RONDB_TARBALL_LOCAL_REMOTE=$RONDB_TARBALL_LOCAL_REMOTE \
         --build-arg RONDB_X86_TARBALL_URI=$RONDB_TARBALL_URI \
@@ -424,7 +433,7 @@ service-template() {
     %s:
       image: %s
       container_name: %s
-" "$SERVICE_NAME" "$RONDB_IMAGE_NAME" "$SERVICE_NAME";
+" "$SERVICE_NAME" "$RONDB_IMAGE_ID" "$SERVICE_NAME";
 }
 
 DEPENDS_ON_FIELD="
