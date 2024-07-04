@@ -64,8 +64,18 @@ env:
   X86_IMAGE_NAME: rondb-amd64
 
 jobs:
+  payload-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [ "${{ inputs.is_latest_rondb_release }}" = "true" ] && [ "${{ inputs.base_download_url }}" != "https://repo.hops.works/master" ]; then
+            echo "is_latest_rondb_release can only be true if base_download_url is set to https://repo.hops.works/master"
+            exit 1
+          fi
+
   check-git:
     runs-on: ubuntu-latest
+    needs: [payload-validation]
     outputs:
       is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
     steps:
