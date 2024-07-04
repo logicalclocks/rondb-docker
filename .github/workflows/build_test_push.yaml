@@ -26,6 +26,7 @@ on:
       base_download_url:
         type: string
         required: true
+        description: "Base URL for downloading RonDB tarballs; This will afect the image name"
         default: https://repo.hops.works/master
         
   # Inputs here have to be duplicated from workflow_call...
@@ -54,6 +55,7 @@ on:
       base_download_url:
         type: choice
         required: true
+        description: "Base URL for downloading RonDB tarballs; This will afect the image name"
         options:
         - https://repo.hops.works/master
         - https://repo.hops.works/master/rondb-dev
