@@ -240,7 +240,7 @@ jobs:
           docker push $NEW_IMAGE_ID
 
       - name: Push with tag `latest`
-        if: ${{ needs.process-info.outputs.is_highest_release && inputs.is_latest_rondb_release }}
+        if: ${{ needs.process-info.outputs.is_highest_release == 'true' && inputs.is_latest_rondb_release }}
         run: |
           NEW_IMAGE_ID=hopsworks/$X86_IMAGE_NAME:latest
 
