@@ -84,9 +84,9 @@ jobs:
     needs: [payload-validation]
     outputs:
       is_highest_release: ${{ steps.is_highest_release.outputs.is_highest }}
-      arm_image_name: ${{ steps.image_name.outputs.arm_image_name }}
-      x86_image_name: ${{ steps.image_name.outputs.x86_image_name }}
-      multi_image_name: ${{ steps.image_name.outputs.multi_image_name }}
+      arm_image_name: ${{ steps.image_names.outputs.arm }}
+      x86_image_name: ${{ steps.image_names.outputs.x86 }}
+      multi_image_name: ${{ steps.image_names.outputs.multi }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,16 +110,16 @@ jobs:
       # When using tarballs from rondb-dev, we'll use the image name "rondb-dev"
       - name: Get image names
         if: github.repository == 'logicalclocks/rondb-docker'
-        id: image_name
+        id: image_names
         run: |
           if [ "${{ inputs.base_download_url }}" == "https://repo.hops.works/master" ]; then
-            echo "arm_image_name=rondb-arm64" >> $GITHUB_ENV
-            echo "x86_image_name=rondb-amd64" >> $GITHUB_ENV
-            echo "multi_image_name=rondb" >> $GITHUB_ENV
+            echo "arm=rondb-arm64" >> $GITHUB_ENV
+            echo "x86=rondb-amd64" >> $GITHUB_ENV
+            echo "multi=rondb" >> $GITHUB_ENV
           else
-            echo "arm_image_name=rondb-dev-arm64" >> $GITHUB_ENV
-            echo "x86_image_name=rondb-dev-amd64" >> $GITHUB_ENV
-            echo "multi_image_name=rondb-dev" >> $GITHUB_ENV
+            echo "arm=rondb-dev-arm64" >> $GITHUB_ENV
+            echo "x86=rondb-dev-amd64" >> $GITHUB_ENV
+            echo "multi=rondb-dev" >> $GITHUB_ENV
           fi
 
   build-test-push-x86:
