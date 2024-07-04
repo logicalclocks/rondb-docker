@@ -15,18 +15,18 @@ on:
         type: string
       is_latest_rondb_release:
         required: true
-        description: "Is latest stable RonDB release"
+        description: "Is latest stable RonDB release; affects the image tag"
         type: boolean
         default: false
       skip_test:
         required: true
-        description: "Don't run a docker-compose cluster with benchmarking"
+        description: "Skip running a docker-compose cluster with benchmarking"
         type: boolean
         default: false
       base_download_url:
         type: string
         required: true
-        description: "Base URL for downloading RonDB tarballs; This will afect the image name"
+        description: "Base URL for downloading RonDB tarballs; affects the image name"
         default: https://repo.hops.works/master
         
   # Inputs here have to be duplicated from workflow_call...
@@ -44,18 +44,18 @@ on:
         type: string
       is_latest_rondb_release:
         required: true
-        description: "Is latest stable RonDB release"
+        description: "Is latest stable RonDB release; affects the image tag"
         type: boolean
         default: false
       skip_test:
         required: true
-        description: "Don't run a docker-compose cluster with benchmarking"
+        description: "Skip running a docker-compose cluster with benchmarking"
         type: boolean
         default: false
       base_download_url:
         type: choice
         required: true
-        description: "Base URL for downloading RonDB tarballs; This will afect the image name"
+        description: "Base URL for downloading RonDB tarballs; affects the image name"
         default: https://repo.hops.works/master
         options:
         - https://repo.hops.works/master
