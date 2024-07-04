@@ -23,6 +23,11 @@ on:
         description: "Don't run a docker-compose cluster with benchmarking"
         type: boolean
         default: false
+      base_download_url:
+        type: string
+        required: true
+        default: https://repo.hops.works/master
+        
   # Inputs here have to be duplicated from workflow_call...
   # https://github.com/orgs/community/discussions/39357
   workflow_dispatch:
@@ -46,6 +51,12 @@ on:
         description: "Don't run a docker-compose cluster with benchmarking"
         type: boolean
         default: false
+      base_download_url:
+        type: choice
+        required: true
+        options:
+        - https://repo.hops.works/master
+        - https://repo.hops.works/master/rondb-dev
 
 env:
   BASE_DOWNLOAD_URL: https://repo.hops.works/master
@@ -95,7 +106,7 @@ jobs:
         if: ${{ !inputs.skip_test }}
         run: |
           ./run.sh -lv \
-            --rondb-tarball-url $BASE_DOWNLOAD_URL/${{ inputs.rondb_x86_tarball_name }} \
+            --rondb-tarball-url ${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }} \
             --rondb-version ${{ inputs.rondb_version }} \
             --size mini \
             --run-benchmark sysbench_single \
@@ -164,7 +175,7 @@ jobs:
               --tag rondb:${{ inputs.rondb_version }}-$VERSION \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_X86_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_x86_tarball_name }}
+              --build-arg RONDB_X86_TARBALL_URI=${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }}
 
       - name: Push standard versioned image
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
@@ -233,7 +244,7 @@ jobs:
               --output type=registry \
               --build-arg RONDB_VERSION=${{ inputs.rondb_version }} \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_ARM_TARBALL_URI=$BASE_DOWNLOAD_URL/${{ inputs.rondb_arm64_tarball_name }} \
+              --build-arg RONDB_ARM_TARBALL_URI=${{ inputs.base_download_url }}/${{ inputs.rondb_arm64_tarball_name }} \
               --cache-to type=registry,ref=hopsworks/rondb-cache,mode=max \
               --cache-from type=registry,ref=hopsworks/rondb-cache,mode=max
 
