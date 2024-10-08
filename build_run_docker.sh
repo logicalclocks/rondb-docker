@@ -379,7 +379,7 @@ if [ "$NUM_MYSQLD_NODES" -gt 0 ]; then
 fi
 
 DATA_DIR="/srv/hops/mysql-cluster"
-BENCH_DIR="/home/mysql/benchmarks"
+BENCH_DIR="/srv/hops/benchmarks"
 
 #######################
 #######################
