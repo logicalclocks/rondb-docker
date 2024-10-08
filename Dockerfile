@@ -47,7 +47,6 @@ RUN mkdir $DOWNLOADS_CACHE_DIR
 # Copying bare minimum of Hopsworks cloud environment for now
 FROM rondb_runtime_dependencies as cloud_preparation
 ARG RONDB_VERSION=21.04.16
-RUN groupadd mysql && adduser mysql --ingroup mysql
 ENV HOPSWORK_DIR=/srv/hops
 ENV RONDB_BIN_DIR=$HOPSWORK_DIR/mysql-$RONDB_VERSION
 RUN mkdir -p $RONDB_BIN_DIR
@@ -64,8 +63,7 @@ RUN case "$TARGETARCH" in \
 
 RUN --mount=type=bind,source=.,target=/context \
     . /env.sh \
-    && tar xfz /context/${TARBALL_PATH} -C $RONDB_BIN_DIR --strip-components=1 \
-    && chown mysql:mysql -R $RONDB_BIN_DIR
+    && tar xfz /context/${TARBALL_PATH} -C $RONDB_BIN_DIR --strip-components=1
 
 # Get RonDB tarball from remote url & unpack it
 FROM cloud_preparation as remote_tarball
@@ -78,8 +76,7 @@ RUN case "$TARGETARCH" in \
     esac \
     && wget $TARBALL_URL -O ./temp_tarball.tar.gz \
     && tar xfz ./temp_tarball.tar.gz -C $RONDB_BIN_DIR --strip-components=1 \
-    && rm ./temp_tarball.tar.gz \
-    && chown mysql:mysql -R $RONDB_BIN_DIR
+    && rm ./temp_tarball.tar.gz
 
 FROM ${RONDB_TARBALL_LOCAL_REMOTE}_tarball
 
@@ -116,18 +113,15 @@ ENV MYSQL_UNIX_PORT=$RONDB_DATA_DIR/mysql.sock
 
 RUN mkdir -p $LOG_DIR $RONDB_SCRIPTS_DIR $BACKUP_DATA_DIR $DISK_COLUMNS_DIR
 
-COPY --chown=mysql:mysql ./resources/rondb_scripts $RONDB_SCRIPTS_DIR
+COPY ./resources/rondb_scripts $RONDB_SCRIPTS_DIR
 ENV PATH=$RONDB_SCRIPTS_DIR:$PATH
-
-# So the path survives changing user to mysql
-RUN echo "export PATH=$PATH" >> /home/mysql/.profile
 
 RUN touch $MYSQL_UNIX_PORT
 
 # We expect this image to be used as base image to other
 # images with additional files specific to Docker
-COPY --chown=mysql:mysql ./resources/entrypoints ./docker/rondb_standalone/entrypoints
-COPY --chown=mysql:mysql ./resources/healthcheck.sh ./docker/rondb_standalone/healthcheck.sh
+COPY ./resources/entrypoints ./docker/rondb_standalone/entrypoints
+COPY ./resources/healthcheck.sh ./docker/rondb_standalone/healthcheck.sh
 
 # Can be used to mount SQL init scripts
 ENV SQL_INIT_SCRIPTS_DIR=$HOPSWORK_DIR/docker/rondb_standalone/sql_init_scripts
@@ -135,13 +129,16 @@ RUN mkdir $SQL_INIT_SCRIPTS_DIR
 
 # Creating benchmarking files/directories
 # When using load balancers, "sysbench" can be used for both _single and _multi
-ENV BENCHMARKS_DIR=/home/mysql/benchmarks
+ENV BENCHMARKS_DIR=$HOPSWORK_DIR/benchmarks
 RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
     && mkdir -p sysbench sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
 
-# Avoid changing files if they are already owned by mysql; otherwise image size doubles
-RUN chown mysql:mysql --from=root:root -R $HOPSWORK_DIR /home/mysql
+# These directories have to have 777 permissions if we want to
+# run RonDB containers with arbitrary users
+RUN chmod 777 -R $RONDB_DATA_DIR \
+    && chmod 777 -R $HOPSWORK_DIR/docker \
+    && chmod 777 $BENCHMARKS_DIR
 
-ENTRYPOINT ["./docker/rondb_standalone/entrypoints/entrypoint.sh"]
+ENTRYPOINT ["./docker/rondb_standalone/entrypoints/main.sh"]
 EXPOSE 3306 33060 11860 1186 4406 5406
 CMD ["mysqld"]

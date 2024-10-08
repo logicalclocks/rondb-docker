@@ -25,23 +25,10 @@ _get_config() {
     "$@" --verbose --help 2>/dev/null | grep "^$conf" | awk '$1 == "'"$conf"'" { print $2; exit }'
 }
 
-# Check if entrypoint (and the container) is running as root
-# Important: Distinguish between MYSQLD_USER and MYSQL_BENCH_USER
-if [ "$(id --user)" = "0" ]; then
-    echo "[entrypoints/mysqld_configure.sh] We are running as root; setting MYSQLD_USER to 'mysql'"
-    is_root=1
-    install_devnull="install /dev/null -m0600 -omysql -gmysql"
-    MYSQLD_USER=mysql
-else
-    echo "[entrypoints/mysqld_configure.sh] Setting MYSQLD_USER to current non-root user"
-    install_devnull="install /dev/null -m0600"
-    MYSQLD_USER=$(id --user --name)
-fi
-
 # Make sure that "--defaults-file" is always run as second argument
 # Otherwise there is a risk that it might not be read
 shift
-set -- mysqld --defaults-file="$RONDB_DATA_DIR/my.cnf" --user="$MYSQLD_USER" "$@"
+set -- mysqld --defaults-file="$RONDB_DATA_DIR/my.cnf" "$@"
 echo "[entrypoints/mysqld_configure.sh] \$@: $*"
 
 # Test that the server can start. We redirect stdout to /dev/null so
