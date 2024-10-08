@@ -142,6 +142,14 @@ RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
 # Avoid changing files if they are already owned by mysql; otherwise image size doubles
 RUN chown mysql:mysql --from=root:root -R $HOPSWORK_DIR /home/mysql
 
+# These directories have to have 777 permissions if we want to
+# run RonDB Pods as any user
+RUN chmod 777 $RONDB_DATA_DIR \
+    && chmod 777 $RONDB_DATA_DIR/ndb \
+    && chmod 777 $BACKUP_DATA_DIR \
+    && chmod 777 $HOPSWORK_DIR/docker/rondb_standalone \
+    && chmod -R 777 $MYSQLD_DATA_DIR
+
 ENTRYPOINT ["./docker/rondb_standalone/entrypoints/entrypoint.sh"]
 EXPOSE 3306 33060 11860 1186 4406 5406
 CMD ["mysqld"]
