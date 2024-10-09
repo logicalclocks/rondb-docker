@@ -137,7 +137,7 @@ RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
 # run RonDB containers with arbitrary users
 RUN chmod 777 -R $RONDB_DATA_DIR \
     && chmod 777 -R $HOPSWORK_DIR/docker \
-    && chmod 777 $BENCHMARKS_DIR
+    && chmod 777 -R $BENCHMARKS_DIR
 
 ENTRYPOINT ["./docker/rondb_standalone/entrypoints/main.sh"]
 EXPOSE 3306 33060 11860 1186 4406 5406
