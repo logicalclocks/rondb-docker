@@ -139,6 +139,9 @@ RUN chmod 777 -R $RONDB_DATA_DIR \
     && chmod 777 -R $HOPSWORK_DIR/docker \
     && chmod 777 -R $BENCHMARKS_DIR
 
+# Remove awkward message when using arbitrary user
+RUN echo "PS1='${debian_chroot:+(\$debian_chroot)}\h:\w\$ '" >> /etc/bash.bashrc
+
 ENTRYPOINT ["./docker/rondb_standalone/entrypoints/main.sh"]
 EXPOSE 3306 33060 11860 1186 4406 5406
 CMD ["mysqld"]
