@@ -50,7 +50,7 @@ DETACHED=
 RONDB_SIZE=small
 SQL_INIT_SCRIPT_CLI_DIR=$SCRIPT_DIR/resources/sql_init_scripts
 RONDB_IMAGE_NAME=rondb
-RONDB_VERSION=22.10.5
+RONDB_VERSION=24.10.0
 
 function print_usage() {
     cat <<EOF
@@ -385,7 +385,8 @@ BENCH_DIR="/srv/hops/benchmarks"
 #######################
 #######################
 
-RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION-$VERSION"
+# RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION-$VERSION"
+RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION"
 if [ ! -n "$RONDB_TARBALL_PATH" ] && [ ! -n "$RONDB_TARBALL_URL" ]; then
     RONDB_IMAGE_ID="hopsworks/$RONDB_IMAGE_ID"
     docker pull $RONDB_IMAGE_ID
