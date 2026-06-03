@@ -489,6 +489,8 @@ CONFIG_INI=$(printf "$CONFIG_INI_TEMPLATE" \
     "$CONFIG_INI_TotalMemoryConfig" \
     "$CONFIG_INI_MaxNoOfTables" \
     "$CONFIG_INI_MaxNoOfAttributes" \
+    "$CONFIG_INI_MaxNoOfOrderedIndexes" \
+    "$CONFIG_INI_MaxNoOfUniqueHashIndexes" \
     "$CONFIG_INI_MaxNoOfTriggers" \
     "$CONFIG_INI_TransactionMemory" \
     "$CONFIG_INI_SharedGlobalMemory" \
