@@ -24,6 +24,7 @@ RUN if [ "$TARGETARCH" != "arm64" ] && [ "$TARGETARCH" != "amd64" ]; then \
 RUN --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt-$TARGETPLATFORM \
     --mount=type=cache,target=/var/lib/apt/lists,id=ubuntu22-apt-lists-$TARGETPLATFORM \
     apt-get update -y \
+    && apt-get upgrade -y \
     && apt-get install -y wget tar gzip vim \
     libaio1 libaio-dev \
     libncurses5 libnuma-dev \
